@@ -54,21 +54,11 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     }
 
     private int getCursorX() {
-    	if (SAOOption.CURSOR_MOVEMENT.value){
-            return SAOOption.CURSOR_MOVEMENT.value ? (width / 2 - mouseX) / 2 : 0;
-    	}
-    	else {
-            return 0;
-    	}
+        return SAOOption.CURSOR_MOVEMENT.value ? SAOOption.CURSOR_MOVEMENT.value ? (width / 2 - mouseX) / 2 : 0 : 0;
     }
 
     private int getCursorY() {
-    	if (SAOOption.CURSOR_MOVEMENT.value){
-        return SAOOption.CURSOR_MOVEMENT.value ? (height / 2 - mouseY) / 2 : 0;
-    	}
-    	else {
-            return 0;
-    	}
+        return SAOOption.CURSOR_MOVEMENT.value ? SAOOption.CURSOR_MOVEMENT.value ? (height / 2 - mouseY) / 2 : 0 : 0;
     }
 
     @Override
@@ -85,9 +75,6 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     public void updateScreen() {
         if (this.elements == null) return;
         for (int i = elements.size() - 1; i >= 0; i--) {
-            if (i >= elements.size()) {
-                continue;
-            }
 
             if (elements.get(i).removed()) {
                 elements.get(i).close(mc);
@@ -118,13 +105,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
         SAOGL.glBlend(true);
         SAOGL.tryBlendFuncSeparate(770, 771, 1, 0);
 
-        for (int i = elements.size() - 1; i >= 0; i--) {
-            if (i >= elements.size()) {
-                continue;
-            }
-
-            elements.get(i).draw(mc, cursorX, cursorY);
-        }
+        for (int i = elements.size() - 1; i >= 0; i--) elements.get(i).draw(mc, cursorX, cursorY);
 
         if (CURSOR_STATUS == SAOCursorStatus.SHOW) {
             SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value? SAOResources.gui: SAOResources.guiCustom);
@@ -160,18 +141,10 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     @Override
     protected void keyTyped(char ch, int key) throws IOException {
         super.keyTyped(ch, key);
+        for (int i = elements.size() - 1; i >= 0; i--)
+            if (elements.get(i).focus && elements.get(i).keyTyped(mc, ch, key))
+                actionPerformed(elements.get(i), SAOAction.KEY_TYPED, key);
 
-        for (int i = elements.size() - 1; i >= 0; i--) {
-            if (i >= elements.size()) {
-                continue;
-            }
-
-            if (elements.get(i).focus) {
-                if (elements.get(i).keyTyped(mc, ch, key)) {
-                    actionPerformed(elements.get(i), SAOAction.KEY_TYPED, key);
-                }
-            }
-        }
     }
 
     @Override
@@ -181,23 +154,15 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
 
         boolean clickedElement = false;
 
-        for (int i = elements.size() - 1; i >= 0; i--) {
-            if (i >= elements.size()) {
-                continue;
-            }
-
+        for (int i = elements.size() - 1; i >= 0; i--)
             if (elements.get(i).mouseOver(cursorX, cursorY)) {
-                if (elements.get(i).mousePressed(mc, cursorX, cursorY, button)) {
+                if (elements.get(i).mousePressed(mc, cursorX, cursorY, button))
                     actionPerformed(elements.get(i), SAOAction.getAction(button, true), button);
-                }
 
                 clickedElement = true;
             }
-        }
 
-        if (!clickedElement) {
-            backgroundClicked(cursorX, cursorY, button);
-        }
+        if (!clickedElement) backgroundClicked(cursorX, cursorY, button);
     }
 
     @Override
@@ -205,17 +170,9 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
         super.mouseReleased(cursorX, cursorY, button);
         mouseDown &= (~(0x1 << button));
 
-        for (int i = elements.size() - 1; i >= 0; i--) {
-            if (i >= elements.size()) {
-                continue;
-            }
-
-            if (elements.get(i).mouseOver(cursorX, cursorY, button)) {
-                if (elements.get(i).mouseReleased(mc, cursorX, cursorY, button)) {
-                    actionPerformed(elements.get(i), SAOAction.getAction(button, false), button);
-                }
-            }
-        }
+        for (int i = elements.size() - 1; i >= 0; i--)
+            if (elements.get(i).mouseOver(cursorX, cursorY, button) && elements.get(i).mouseReleased(mc, cursorX, cursorY, button))
+                actionPerformed(elements.get(i), SAOAction.getAction(button, false), button);
     }
 
     protected void backgroundClicked(int cursorX, int cursorY, int button) {
@@ -228,17 +185,9 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
     }
 
     private void mouseWheel(int cursorX, int cursorY, int delta) {
-        for (int i = elements.size() - 1; i >= 0; i--) {
-            if (i >= elements.size()) {
-                continue;
-            }
-
-            if (elements.get(i).mouseOver(cursorX, cursorY)) {
-                if (elements.get(i).mouseWheel(mc, cursorX, cursorY, delta)) {
-                    actionPerformed(elements.get(i), SAOAction.MOUSE_WHEEL, delta);
-                }
-            }
-        }
+        for (int i = elements.size() - 1; i >= 0; i--)
+            if (elements.get(i).mouseOver(cursorX, cursorY) && elements.get(i).mouseWheel(mc, cursorX, cursorY, delta))
+                actionPerformed(elements.get(i), SAOAction.MOUSE_WHEEL, delta);
     }
 
     @Override
@@ -255,9 +204,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
             final int y = height - Mouse.getEventY() * height / mc.displayHeight - 1;
             final int delta = Mouse.getEventDWheel();
 
-            if (delta != 0) {
-                mouseWheel(x, y, delta);
-            }
+            if (delta != 0) mouseWheel(x, y, delta);
         }
     }
 
@@ -268,18 +215,14 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
 
     @Override
     public void onGuiClosed() {
-        if (grabbed) {
-            Mouse.setGrabbed(false);
-        }
+        if (grabbed) Mouse.setGrabbed(false);
 
         close();
     }
 
     protected void close() {
         for (int i = elements.size() - 1; i >= 0; i--) {
-            if (i >= elements.size()) {
-                continue;
-            }
+            if (i >= elements.size()) continue;
 
             elements.get(i).close(mc);
             elements.remove(i);

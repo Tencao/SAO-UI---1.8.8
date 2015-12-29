@@ -69,7 +69,7 @@ public class SAOIngameGUI extends GuiIngameForge {
             renderJumpBar = false;
             renderArmor = false;
             renderHealthMount = false;
-            renderExperiance = false;;
+            renderExperiance = false;
             mc.entityRenderer.setupOverlayRendering();
         } // Basically adding what super doesn't render by default
 
@@ -85,14 +85,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     protected void renderArmor(int width, int height) {
-    	// Overrides and cancels any event registering what we want to, before we do, then forcing ours to the highest priority.
-    	if(eventParent.type == ARMOR) {
-    		if(eventParent.isCancelable()) {
-    			eventParent.setCanceled(true);
-    			pre(ARMOR);
-    			return;
-    		}
-    	}    
+        if (replaceEvent(ARMOR)) return;
         // Nothing happens here
         post(ARMOR);
     }
@@ -100,21 +93,10 @@ public class SAOIngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     protected void renderTooltip(ScaledResolution res, float partialTicks) {
-    	if(eventParent.type == HOTBAR) {
-    		if(eventParent.isCancelable()) {
-    			eventParent.setCanceled(true);
-    			pre(HOTBAR);
-    			return;
-    		}
-    	}
+        if (replaceEvent(HOTBAR)) return;
 
-        if (mc.playerController.isSpectator())
-        {
-            this.spectatorGui.renderTooltip(res, partialTicks);
-        }
-        else if (SAOOption.DEFAULT_HOTBAR.value){
-        	super.renderTooltip(res, partialTicks);
-        }
+        if (mc.playerController.isSpectator()) this.spectatorGui.renderTooltip(res, partialTicks);
+        else if (SAOOption.DEFAULT_HOTBAR.value) super.renderTooltip(res, partialTicks);
         else if (SAOOption.ALT_HOTBAR.value) {
             SAOGL.glAlpha(true);
             SAOGL.glBlend(true);
@@ -144,9 +126,7 @@ public class SAOIngameGUI extends GuiIngameForge {
 
             RenderHelper.disableStandardItemLighting();
 
-        }
-        else
-        {
+        } else {
             SAOGL.glAlpha(true);
             SAOGL.glBlend(true);
             SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value? SAOResources.gui: SAOResources.guiCustom);
@@ -168,12 +148,10 @@ public class SAOIngameGUI extends GuiIngameForge {
 
             RenderHelper.enableGUIStandardItemLighting();
 
-            for (int i = 0; i < slotCount; i++) {
+            for (int i = 0; i < slotCount; i++)
                 super.renderHotbarItem(i, res.getScaledWidth() - 22, slotsY + 2 + (22 * i), partialTicks, mc.thePlayer);
-            }
 
             RenderHelper.disableStandardItemLighting();
-
         }
         SAOGL.glRescaleNormal(false);
 
@@ -183,13 +161,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     protected void renderAir(int width, int height) {
-    	if(eventParent.type == AIR) {
-    		if(eventParent.isCancelable()) {
-    			eventParent.setCanceled(true);
-    			pre(AIR);
-    			return;
-    		}
-    	}
+        if (replaceEvent(AIR)) return;
         // Linked to renderHealth
         post(AIR);
     }
@@ -197,13 +169,8 @@ public class SAOIngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void renderHealth(int width, int height) {
-    	if(eventParent.type == HEALTH) {
-    		if(eventParent.isCancelable()) {
-    			eventParent.setCanceled(true);
-    			pre(HEALTH);
-    			return;
-    		}
-    	}
+        if (replaceEvent(HEALTH)) return;
+
         mc.mcProfiler.startSection("health");
 
         final String username = mc.thePlayer.getDisplayNameString();
@@ -247,9 +214,7 @@ public class SAOIngameGUI extends GuiIngameForge {
                 if (((i >= 105) && (i <= 110)) || (i >= healthValue - h)) {
                     h--;
 
-                    if (h <= 0) {
-                        break;
-                    }
+                    if (h <= 0) break;
                 }
             }
         } else {
@@ -265,9 +230,7 @@ public class SAOIngameGUI extends GuiIngameForge {
                 } else if ((i >= stepOne && i <= stepOne + 3) || (i >= stepTwo && i <= stepTwo + 3) || (i >= stepThree)) {
                     h++;
 
-                    if (h > 12) {
-                        break;
-                    }
+                    if (h > 12) break;
                 }
             }
 
@@ -410,13 +373,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     private void renderFood(int healthWidth, int healthHeight, int offsetUsername, int stepOne, int stepTwo, int stepThree) {
-    	if(eventParent.type == FOOD) {
-    		if(eventParent.isCancelable()) {
-    			eventParent.setCanceled(true);
-    			pre(FOOD);
-    			return;
-    		}
-    	}
+        if (replaceEvent(FOOD)) return;
         mc.mcProfiler.startSection("food");
         final int foodValue = (int) (SAOMod.getHungerFract(mc, mc.thePlayer, time) * healthWidth);
         int h = foodValue < 12? 12 - foodValue: 0;
@@ -432,9 +389,7 @@ public class SAOIngameGUI extends GuiIngameForge {
             } else if ((i >= stepOne && i <= stepOne + 3) || (i >= stepTwo && i <= stepTwo + 3) || (i >= stepThree)) {
                 h++;
 
-                if (h > 12) {
-                    break;
-                }
+                if (h > 12) break;
             }
         }
 
@@ -454,13 +409,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     protected void renderExperience(int width, int height) {
-    	if(eventParent.type == EXPERIENCE) {
-    		if(eventParent.isCancelable()) {
-    			eventParent.setCanceled(true);
-    			pre(EXPERIENCE);
-    			return;
-    		}
-    	}
+        if (replaceEvent(EXPERIENCE)) return;
         // Nothing happens here
         post(EXPERIENCE);
     }
@@ -468,17 +417,27 @@ public class SAOIngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     protected void renderJumpBar(int width, int height) {
-    	if(eventParent.type == JUMPBAR) {
-    		if(eventParent.isCancelable()) {
-    			eventParent.setCanceled(true);
-    			pre(JUMPBAR);
-    			return;
-    		}
-    	}
+        if (replaceEvent(JUMPBAR)) return;
         // Nothing happens here (not implemented yet)
         post(JUMPBAR);
     }
 
+    /**
+    * Overrides and cancels any event registering what we
+    * want to, before we do, then forcing ours to the highest priority.
+    *
+    * @param el the element type to override
+    * @return whether caller should return
+    */
+
+    private boolean replaceEvent(ElementType el) {
+        if (eventParent.type == el && eventParent.isCancelable()) {
+            eventParent.setCanceled(true);
+            pre(el);
+            return true;
+        }
+        return false;
+    }
     /*@Override
     protected void renderChat(int width, int height) {
         super.renderChat(width, height);
@@ -491,25 +450,17 @@ public class SAOIngameGUI extends GuiIngameForge {
         Entity tmp = player.ridingEntity;
         if (!(tmp instanceof EntityLivingBase)) return;
 
-    	if(eventParent.type == HEALTHMOUNT) {
-    		if(eventParent.isCancelable()) {
-    			eventParent.setCanceled(true);
-    			pre(HEALTHMOUNT);
-    			return;
-    		}
-    	}
+    	if (replaceEvent(HEALTHMOUNT)) return;
         // Not implemented yet
         post(HEALTHMOUNT);
     }
 
     // c/p from GuiIngameForge
-    private boolean pre(ElementType type)
-    {
+    private boolean pre(ElementType type) {
         return MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(eventParent, type));
     }
     
-    private void post(ElementType type)
-    {
+    private void post(ElementType type) {
         MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(eventParent, type));
     }
 

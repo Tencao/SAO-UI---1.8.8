@@ -151,40 +151,20 @@ public class SAOMod {
 			@Override
 			public void run() {
                 while (manager != null) {
-                    try {/*
-                        for (final Field field : manager.getClass().getDeclaredFields()) {
-                            if (Map.class.isAssignableFrom(field.getType())) {
-                                field.setAccessible(true);
+                    try {
+                        manager.entityRenderMap.keySet().stream().filter(key -> key instanceof Class<?>).forEach(key -> {
+                            final Class<?> class0 = (Class<?>) key;
 
-                                final Map playerRenderMap = (Map) field.get(manager);
+                            if (EntityLivingBase.class.isAssignableFrom(class0)) {
+                                final Object value = manager.entityRenderMap.get(key);
 
-                                for (final Object entry : playerRenderMap.entrySet()) {
-                                    final Object value = ((Entry) entry).getValue();
-
-                                    if ((value instanceof Render) && (!(value instanceof SAORenderBase))) {
-                                        final Render render = new SAORenderBase((Render) value);
-                                        ((Entry) entry).setValue(render);
-                                    }
+                                if ((value instanceof Render) && (!(value instanceof SAORenderBase))) {
+                                    final Render render = new SAORenderBase((Render) value);
+                                    manager.entityRenderMap.put(key, render);
+                                    render.getRenderManager();
                                 }
                             }
-                        }  */        	
-                
-                    	
-                    	for (final Class<? extends Entity> key : manager.entityRenderMap.keySet()) {
-                    		if (key instanceof Class<?>) {
-                    			final Class<?> class0 = (Class<?>) key;
-							
-                    			if (EntityLivingBase.class.isAssignableFrom(class0)) {
-                    				final Object value = manager.entityRenderMap.get(key);
-								
-                    				if ((value instanceof Render) && (!(value instanceof SAORenderBase))) {
-                    					final Render render = new SAORenderBase((Render) value);
-                    					manager.entityRenderMap.put(key, render);
-                    					render.getRenderManager();
-                    				}
-                    			}
-                    		}
-                    	}
+                    	});
                     } catch (Exception e) {
                     	SAOMod.sleep(1000L);
     				}					
@@ -713,16 +693,16 @@ public class SAOMod {
 
 
     public static String unformatName(String name) {
-        int index = name.indexOf("§");
+        int index = name.indexOf("ï¿½");
 
         while (index != -1) {
             if (index + 1 < name.length()) {
                 name = name.replace(name.substring(index, index + 2), "");
             } else {
-                name = name.replace("§", "");
+                name = name.replace("ï¿½", "");
             }
 
-            index = name.indexOf("§");
+            index = name.indexOf("ï¿½");
         }
 
         return name;
