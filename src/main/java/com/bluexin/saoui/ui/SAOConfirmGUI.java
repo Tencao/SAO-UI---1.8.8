@@ -20,26 +20,23 @@ public class SAOConfirmGUI extends SAOWindowGUI {
         actionHandler = handler;
     }
 
-    public final void setText(String text) {
-        textText.setText(text);
-    }
-
     public final String getText() {
         return textText.getText();
     }
 
+    public final void setText(String text) {
+        textText.setText(text);
+    }
+
     @Override
-	protected int getSize() {
+    protected int getSize() {
         return Math.max(super.getSize() - 20, 60);
     }
 
     @Override
-	public void actionPerformed(SAOElementGUI element, SAOAction action, int data) {
-        if (actionHandler != null) {
-            actionHandler.actionPerformed(element, action, data);
-        } else {
-            super.actionPerformed(element, action, data);
-        }
+    public void actionPerformed(SAOElementGUI element, SAOAction action, int data) {
+        if (actionHandler != null) actionHandler.actionPerformed(element, action, data);
+        else super.actionPerformed(element, action, data);
     }
 
     public final void confirm() {
@@ -51,7 +48,7 @@ public class SAOConfirmGUI extends SAOWindowGUI {
     }
 
     @Override
-	protected int getBoxSize(boolean bottom) {
+    protected int getBoxSize(boolean bottom) {
         return bottom ? 40 : super.getBoxSize(bottom);
     }
 

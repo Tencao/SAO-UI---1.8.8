@@ -40,7 +40,6 @@ public class SAOIngameGUI extends GuiIngameForge {
     private FontRenderer fontRenderer = null;
     private RenderGameOverlayEvent eventParent;
 
-    private ScaledResolution res = null;
     private float time;
 
     public SAOIngameGUI(Minecraft mc) {
@@ -49,7 +48,7 @@ public class SAOIngameGUI extends GuiIngameForge {
 
     @Override
     public void renderGameOverlay(float partialTicks) {
-    	res = new ScaledResolution(mc);
+        ScaledResolution res = new ScaledResolution(mc);
         eventParent = new RenderGameOverlayEvent(partialTicks, res);
         fontRenderer = mc.fontRendererObj;
         int width = res.getScaledWidth();
@@ -456,8 +455,8 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     // c/p from GuiIngameForge
-    private boolean pre(ElementType type) {
-        return MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(eventParent, type));
+    private void pre(ElementType type) {
+        MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(eventParent, type));
     }
     
     private void post(ElementType type) {
@@ -465,6 +464,6 @@ public class SAOIngameGUI extends GuiIngameForge {
     }
 
     public boolean backgroundClicked(int cursorX, int cursorY, int button) {
-        return !SAOOption.DEFAULT_UI.value;
+        return SAOOption.DEFAULT_UI.value;
     }
 }

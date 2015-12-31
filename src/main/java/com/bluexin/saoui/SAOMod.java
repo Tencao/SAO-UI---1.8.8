@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import com.bluexin.saoui.ui.SAOConfirmGUI;
 import com.bluexin.saoui.ui.SAOWindowGUI;
@@ -43,6 +44,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -89,9 +91,7 @@ public class SAOMod {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
 
-        FMLCommonHandler.instance().bus().register(new SAOEventHandler());
         MinecraftForge.EVENT_BUS.register(new SAOEventHandler());
-        FMLCommonHandler.instance().bus().register(new SAORenderHandler());
         MinecraftForge.EVENT_BUS.register(new SAORenderHandler());
 
         config = new Configuration(event.getSuggestedConfigurationFile());
@@ -128,7 +128,7 @@ public class SAOMod {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         final Minecraft mc = Minecraft.getMinecraft();
-        /*
+
         friendsFile = new File(mc.mcDataDir, ".sao_friends");
 
         if (!friendsFile.exists()) {
@@ -136,51 +136,6 @@ public class SAOMod {
         }
 
         friends = loadFriends();
-         */
-        final RenderManager manager = mc.getRenderManager();
-
-        if (renderManagerUpdate != null) {
-            final Thread thread = renderManagerUpdate;
-            renderManagerUpdate = null;
-            thread.interrupt();
-        }
-        
-        renderManagerUpdate = new Thread() {
-        	
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public void run() {
-                while (manager != null) {
-                    try {
-                        manager.entityRenderMap.keySet().stream().filter(key -> key instanceof Class<?>).forEach(key -> {
-                            final Class<?> class0 = (Class<?>) key;
-
-                            if (EntityLivingBase.class.isAssignableFrom(class0)) {
-                                final Object value = manager.entityRenderMap.get(key);
-
-                                if ((value instanceof Render) && (!(value instanceof SAORenderBase))) {
-                                    final Render render = new SAORenderBase((Render) value);
-                                    manager.entityRenderMap.put(key, render);
-                                    render.getRenderManager();
-                                }
-                            }
-                    	});
-                    } catch (Exception e) {
-                    	SAOMod.sleep(1000L);
-    				}					
-					SAOMod.sleep(10000L);
-				}
-			}
-
-        };
-
-        renderManagerUpdate.start();
-
-        if (mcModThread != null) {
-            final Thread thread = mcModThread;
-            mcModThread = null;
-            thread.interrupt();
-        }
 
         if (healthSmooth == null) {
             healthSmooth = new HashMap<>();
@@ -201,6 +156,24 @@ public class SAOMod {
         }
         
 		SAORenderHandler.replaceGUI = true;
+    }
+
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent evt) {
+        /*
+        If some mobs don't get registered this way, that means the mods don't register their renderers at the right place.
+         */
+        final Minecraft mc = Minecraft.getMinecraft();
+        RenderManager manager = mc.getRenderManager();
+        manager.entityRenderMap.keySet().stream().filter(key -> key != null).filter(key -> EntityLivingBase.class.isAssignableFrom((Class<?>) key)).forEach(key -> {
+            final Object value = manager.entityRenderMap.get(key);
+
+            if (value != null && !(value instanceof SAORenderBase)) {
+                final Render render = new SAORenderBase((Render) value);
+                manager.entityRenderMap.put(key, render);
+                render.getRenderManager();
+            }
+        });
     }
 
     private static boolean sleep(long time) {
@@ -586,15 +559,7 @@ public class SAOMod {
     }
 
     public static boolean isPartyMember(String username) {
-        if (party != null) {
-            for (final String member : party) {
-                if (member.equals(username)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return party != null && Stream.of(party).anyMatch(member -> member.equals(username));
     }
 
     public static boolean isPartyLeader(String username) {

@@ -52,8 +52,8 @@ public enum SAOID {
 
     ALERT(false);
 
-    private final SAOID parent;
     public final boolean menuFlag;
+    private final SAOID parent;
 
     SAOID(SAOID parentID, boolean menu) {
         parent = parentID;
@@ -65,7 +65,7 @@ public enum SAOID {
     }
 
     public boolean hasParent(SAOID id) {
-        return (parent == id) || ((parent != null) && (parent.hasParent(id)));
+        return parent == id || parent != null && parent.hasParent(id);
     }
 
 }

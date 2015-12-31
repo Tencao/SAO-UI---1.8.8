@@ -53,7 +53,7 @@ public class SAORenderHandler {
 
                     if (mc.ingameGUI instanceof SAOIngameGUI){
                     	try {
-                            mc.displayGuiScreen((GuiScreen)null);
+                            mc.displayGuiScreen(null);
                     		mc.displayGuiScreen(new SAODeathGUI((GuiGameOver) mc.currentScreen));
                     		replaceGUI = false;
                     	}

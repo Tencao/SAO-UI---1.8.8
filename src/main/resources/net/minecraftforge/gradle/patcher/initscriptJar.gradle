@@ -1,3 +1,5 @@
+package net.minecraftforge.gradle.patcher
+
 allprojects { project ->
     if (project == project.rootProject)
         return;

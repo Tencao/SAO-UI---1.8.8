@@ -4,6 +4,8 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.stream.Stream;
+
 @SideOnly(Side.CLIENT)
 public enum SAOOption {
 
@@ -32,9 +34,9 @@ public enum SAOOption {
     ALT_ABSORB_POS(StatCollector.translateToLocal("optionAltAbsorbPos"), false, false, UI);
 
     public final String name;
-    public boolean value;
     public final boolean isCategory;
     public final SAOOption category;
+    public boolean value;
 
     SAOOption(String optionName, boolean defaultValue, boolean isCat, SAOOption category) {
         name = optionName;
@@ -43,14 +45,13 @@ public enum SAOOption {
         this.category= category;
     }
 
+    public static SAOOption fromString(String str) {
+        return Stream.of(values()).filter(option -> option.toString().equals(str)).findAny().orElse(null);
+    }
+
     @Override
     public final String toString() {
         return name;
-    }
-
-    public static SAOOption fromString(String str) {
-        for (final SAOOption option: values()) if (option.toString().equals(str)) return option;
-        return null;
     }
 
 }

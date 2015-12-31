@@ -75,8 +75,8 @@ public class SAORenderBase extends Render<EntityLivingBase> {
 
         boolean dead = false, deadStart = false, deadExactly = false;
 
-        if (entity instanceof EntityLivingBase) {
-            final EntityLivingBase living = (EntityLivingBase) entity;
+        if (entity != null) {
+            final EntityLivingBase living = entity;
 
             dead = SAOMod.getHealth(mc, living, SAOMod.UNKNOWN_TIME_DELAY) <= 0;
             deadStart = (living.deathTime == 1);
@@ -89,7 +89,7 @@ public class SAORenderBase extends Render<EntityLivingBase> {
         
         parent.doRender(entity, x, y, z, f0, f1);
 
-        if ((entity instanceof EntityLivingBase) && (!dead) && (!entity.isInvisibleToPlayer(mc.thePlayer))) {
+        if ((entity != null) && (!dead) && (!entity.isInvisibleToPlayer(mc.thePlayer))) {
             if (SAOOption.COLOR_CURSOR.value) {
                 doRenderColorCursor(mc, entity, x, y, z, 64);
             }
@@ -307,7 +307,7 @@ public class SAORenderBase extends Render<EntityLivingBase> {
 
     private void useColor(Minecraft mc, Entity entity, float time) {
         if (entity instanceof EntityLivingBase) {
-            SAOHealthStep.getStep(mc, (EntityLivingBase) entity, time).glColor((EntityLivingBase) entity);
+            SAOHealthStep.getStep(mc, (EntityLivingBase) entity, time).glColor();
         } else {
             SAOHealthStep.GOOD.glColor();
         }
@@ -322,7 +322,7 @@ public class SAORenderBase extends Render<EntityLivingBase> {
 
     @Override
     public void renderName(EntityLivingBase entity, double x, double y, double z) {
-        if (entity instanceof EntityLivingBase) super.renderName(entity, x, y, z);
+        if (entity != null) super.renderName(entity, x, y, z);
     }
 
 	@Override

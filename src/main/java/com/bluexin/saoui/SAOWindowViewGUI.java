@@ -25,7 +25,7 @@ public class SAOWindowViewGUI extends SAOScreenGUI {
         elements.add(createWindow(windowWidth, windowHeight));
     }
 
-    private SAOWindowGUI createWindow(int width, int height) {
+    public SAOWindowGUI createWindow(int width, int height) {
         return null;
     }
 

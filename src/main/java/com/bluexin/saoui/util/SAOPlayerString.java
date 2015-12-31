@@ -1,6 +1,5 @@
 package com.bluexin.saoui.util;
 
-import com.google.common.collect.Multimap;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +13,10 @@ public final class SAOPlayerString implements SAOString {
 
     public SAOPlayerString(EntityPlayer entityPlayer) {
         player = entityPlayer;
+    }
+
+    private static float attr(double attributeValue) {
+        return (float) ((int) (attributeValue * 1000)) / 1000;
     }
 
     public final String toString() {
@@ -33,22 +36,10 @@ public final class SAOPlayerString implements SAOString {
             float itemDamage = 0.0F;
 
             if (player.getCurrentEquippedItem() != null) {
-                final Multimap map = player.getCurrentEquippedItem().getAttributeModifiers();
-                @SuppressWarnings("unchecked") final Collection<?> itemAttackDamage = map.get(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName());
+                @SuppressWarnings("unchecked") final Collection<?> itemAttackDamage = player.getCurrentEquippedItem().getAttributeModifiers().get(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName());
 
-                for (Object value : itemAttackDamage) {
-                    if (value instanceof AttributeModifier) {
-                        final AttributeModifier attrMod = (AttributeModifier) value;
-
-                        if (attrMod.getName().equals("Weapon modifier")) {
-                            switch (attrMod.getOperation()) {
-                                default:
-                                    itemDamage += attrMod.getAmount();
-                                    break;
-                            }
-                        }
-                    }
-                }
+                itemDamage += itemAttackDamage.stream().filter(value -> value instanceof AttributeModifier).map(value -> (AttributeModifier) value)
+                        .filter(mod -> mod.getName().equals("Weapon modifier")).mapToDouble(AttributeModifier::getAmount).sum();
             }
 
             final float strength = attr(attackDamage + itemDamage);
@@ -65,10 +56,6 @@ public final class SAOPlayerString implements SAOString {
         }
 
         return builder.toString();
-    }
-
-    private static float attr(double attributeValue) {
-        return (float) ((int) (attributeValue * 1000)) / 1000;
     }
 
 }
