@@ -1,5 +1,6 @@
 package com.bluexin.saoui.util;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -9,6 +10,7 @@ import java.util.stream.Stream;
 @SideOnly(Side.CLIENT)
 public enum SAOOption {
 
+    VANILLA_OPTIONS(StatCollector.translateToLocal("guiOptions"), false, false, null),
     UI(StatCollector.translateToLocal("optCatUI"), false, true, null),
     RENDERER(StatCollector.translateToLocal("optCatRend"), false, true, null),
     INTERFACES(StatCollector.translateToLocal("optCatInterf"), false, true, null),
@@ -31,12 +33,14 @@ public enum SAOOption {
     SPINNING_CRYSTALS(StatCollector.translateToLocal("optionSpinning"), true, false, RENDERER),
     FORCE_HUD(StatCollector.translateToLocal("optionForceHud"), false, false, UI),
     REMOVE_HPXP(StatCollector.translateToLocal("optionLightHud"), false, false, UI),
-    ALT_ABSORB_POS(StatCollector.translateToLocal("optionAltAbsorbPos"), false, false, UI);
+    ALT_ABSORB_POS(StatCollector.translateToLocal("optionAltAbsorbPos"), false, false, UI),
+    GUI_PAUSE(StatCollector.translateToLocal("optionGuiPause"), true, false, INTERFACES),
+    CUSTOM_FONT(StatCollector.translateToLocal("optionCustomFont"), false, false, null);
 
     public final String name;
     public final boolean isCategory;
     public final SAOOption category;
-    public boolean value;
+    private boolean value;
 
     SAOOption(String optionName, boolean defaultValue, boolean isCat, SAOOption category) {
         name = optionName;
@@ -54,4 +58,22 @@ public enum SAOOption {
         return name;
     }
 
+    public boolean flip() {
+        this.value = !this.getValue();
+        ConfigHandler.setOption(this);
+        if (this == CUSTOM_FONT) SAOGL.setFont(Minecraft.getMinecraft(), this.value);
+        return this.value;
+    }
+
+    public boolean getValue() {
+        return this.value;
+    }
+
+    public void disable() {
+        if (this.value) this.flip();
+    }
+
+    public void enable() {
+        if (!this.value) this.flip();
+    }
 }

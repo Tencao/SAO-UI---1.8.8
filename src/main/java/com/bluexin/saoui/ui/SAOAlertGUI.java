@@ -26,11 +26,11 @@ public class SAOAlertGUI extends SAOElementGUI {
     }
 
     @Override
-    public void draw(Minecraft mc, int cursorX, int cursorY) {
+	public void draw(Minecraft mc, int cursorX, int cursorY) {
         super.draw(mc, cursorX, cursorY);
 
         if (visibility > 0) {
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value? SAOResources.gui: SAOResources.guiCustom);
+            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 
             final int color = mouseOver(cursorX, cursorY) ? alertColor.mediumColor(SAOColor.DEFAULT_FONT_COLOR) : alertColor.rgba;
 
@@ -53,22 +53,22 @@ public class SAOAlertGUI extends SAOElementGUI {
     }
 
     @Override
-    public boolean mouseReleased(Minecraft mc, int cursorX, int cursorY, int button) {
+	public boolean mouseReleased(Minecraft mc, int cursorX, int cursorY, int button) {
         return (button == 0);
     }
 
     @Override
-    public int getX(boolean relative) {
+	public int getX(boolean relative) {
         return super.getX(relative) - width / 2;
     }
 
     @Override
-    public int getY(boolean relative) {
+	public int getY(boolean relative) {
         return super.getY(relative) - height / 2;
     }
 
     @Override
-    public SAOID ID() {
+	public SAOID ID() {
         return SAOID.ALERT;
     }
 

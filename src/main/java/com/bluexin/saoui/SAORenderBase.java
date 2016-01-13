@@ -1,30 +1,22 @@
 package com.bluexin.saoui;
 
-import org.lwjgl.opengl.GL11;
-
-import com.bluexin.saoui.util.SAOColorState;
-import com.bluexin.saoui.util.SAOGL;
-import com.bluexin.saoui.util.SAOHealthStep;
-import com.bluexin.saoui.util.SAOOption;
-import com.bluexin.saoui.util.SAOResources;
-
+import com.bluexin.saoui.ui.SAOCharacterViewGUI;
+import com.bluexin.saoui.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,17 +24,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class SAORenderBase extends Render<EntityLivingBase> {
+class SAORenderBase extends Render {
 
-
-	private static final int HEALTH_COUNT = 32;
+    private static final int HEALTH_COUNT = 32;
     private static final double HEALTH_ANGLE = 0.35F;
     private static final double HEALTH_RANGE = 0.975F;
     private static final float HEALTH_OFFSET = 0.75F;
     @SuppressWarnings("unused")
-	private static final float HEALTH_OFFSET_PLAYER = -0.125F;
+    private static final float HEALTH_OFFSET_PLAYER = -0.125F;
     private static final double HEALTH_HEIGHT = 0.21F;
 
     @SuppressWarnings("unused")
@@ -57,7 +49,6 @@ public class SAORenderBase extends Render<EntityLivingBase> {
     private static final double PIECES_GRAVITY = 0.4;
 
     private final Render parent;
-    private boolean smallArms;
 
     public SAORenderBase(Render render) {
         super(render.getRenderManager());
@@ -65,41 +56,46 @@ public class SAORenderBase extends Render<EntityLivingBase> {
     }
 
     @Override
-    public boolean shouldRender(EntityLivingBase livingEntity, ICamera camera, double camX, double camY, double camZ) {
-        return parent.shouldRender(livingEntity, camera, camX, camY, camZ);
+    public boolean shouldRender(Entity p_177071_1_, ICamera p_177071_2_, double p_177071_3_, double p_177071_5_, double p_177071_7_) {
+        return parent.shouldRender(p_177071_1_, p_177071_2_, p_177071_3_, p_177071_5_, p_177071_7_);
     }
 
-    @Override
-	public void doRender(EntityLivingBase entity, double x, double y, double z, float f0, float f1) {
+	@Override
+    public void doRender(Entity entity, double x, double y, double z, float f0, float f1) {
         final Minecraft mc = Minecraft.getMinecraft();
 
         boolean dead = false, deadStart = false, deadExactly = false;
 
-        if (entity != null) {
-            final EntityLivingBase living = entity;
+        if (entity instanceof EntityLivingBase) {
+            final EntityLivingBase living = (EntityLivingBase) entity;
 
-            dead = SAOMod.getHealth(mc, living, SAOMod.UNKNOWN_TIME_DELAY) <= 0;
+            dead = StaticPlayerHelper.getHealth(mc, living, SAOMod.UNKNOWN_TIME_DELAY) <= 0;
             deadStart = (living.deathTime == 1);
             deadExactly = (living.deathTime >= 18);
 
             if (deadStart) {
                 living.deathTime++;
             }
+        } else if (entity instanceof EntityItem) {
+            final EntityItem item = (EntityItem) entity;
+
+            deadStart = (item.getAge() + 16 >= item.lifespan);
+            deadExactly = (item.getAge() >= item.lifespan);
         }
-        
+
         parent.doRender(entity, x, y, z, f0, f1);
 
-        if ((entity != null) && (!dead) && (!entity.isInvisibleToPlayer(mc.thePlayer))) {
-            if (SAOOption.COLOR_CURSOR.value) {
+        if (!SAOCharacterViewGUI.IS_VIEWING && entity instanceof EntityLivingBase && !dead && !entity.isInvisibleToPlayer(mc.thePlayer)) {
+            if (SAOOption.COLOR_CURSOR.getValue()) {
                 doRenderColorCursor(mc, entity, x, y, z, 64);
             }
 
-            if ((SAOOption.HEALTH_BARS.value) && (!entity.equals(mc.thePlayer))) {
+            if ((SAOOption.HEALTH_BARS.getValue()) && (!entity.equals(mc.thePlayer))) {
                 doRenderHealthBar(mc, entity, x, y, z, f0, f1);
             }
         }
 
-        if (SAOOption.PARTICLES.value) {
+        if (SAOOption.PARTICLES.getValue()) {
             if (deadStart && entity instanceof EntityLivingBase) {
                 SAOSound.playAtEntity(entity, SAOSound.PARTICLES_DEATH);
             }
@@ -112,7 +108,8 @@ public class SAORenderBase extends Render<EntityLivingBase> {
         }
     }
 
-	public void bindTexture(ResourceLocation location) {
+	@Override
+    public void bindTexture(ResourceLocation location) {
         parent.bindTexture(location);
     }
 
@@ -132,9 +129,9 @@ public class SAORenderBase extends Render<EntityLivingBase> {
     }
 
     private void doRenderColorCursor(Minecraft mc, Entity entity, double x, double y, double z, int distance) {
-        if (entity instanceof EntityArmorStand) return;
-        if (entity.riddenByEntity != null) return;
-        if (SAOOption.LESS_VISUALS.value && !(entity instanceof IMob || SAOMod.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != SAOMod.getMaxHealth(entity)) && !(entity instanceof EntityPlayer)) return;
+        if (entity instanceof EntityArmorStand || entity.riddenByEntity != null) return;
+        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)) && !(entity instanceof EntityPlayer))
+            return;
 
         double d3 = entity.getDistanceSqToEntity(renderManager.livingPlayer);
 
@@ -157,54 +154,55 @@ public class SAORenderBase extends Render<EntityLivingBase> {
             SAOGL.tryBlendFuncSeparate(770, 771, 1, 0);
 
 
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value ? SAOResources.entities : SAOResources.entitiesCustom);
+            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
 
             Tessellator tessellator = Tessellator.getInstance();
 
             WorldRenderer worldrenderer = tessellator.getWorldRenderer();
             worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
-            if (entity instanceof EntityLiving || entity instanceof EntityPlayer){
-            	SAOColorState.getColorState(mc, entity, SAOMod.UNKNOWN_TIME_DELAY).glColor();}
+            if (entity instanceof EntityLiving || entity instanceof EntityPlayer) {
+                SAOColorState.getColorState(mc, entity, SAOMod.UNKNOWN_TIME_DELAY).glColor();
+            }
 
-            if (SAOOption.SPINNING_CRYSTALS.value) {
+            if (SAOOption.SPINNING_CRYSTALS.getValue()) {
                 double a = (entity.worldObj.getTotalWorldTime() % 40) / 20.0D  * Math.PI;
                 double cos = Math.cos(a);//Math.PI / 3 * 2);
                 double sin = Math.sin(a);//Math.PI / 3 * 2);
 
                 if (a > Math.PI / 2 && a <= Math.PI * 3 / 2 ) {
-                	worldrenderer.pos(9.0D * cos, -1, 9.0D * sin).tex(0.125F, 0.25F).endVertex();
-                	worldrenderer.pos(9.0D * cos, 17, 9.0D * sin).tex(0.125F, 0.375F).endVertex();
-                	worldrenderer.pos(-9.0D * cos, 17, -9.0D * sin).tex(0F, 0.375F).endVertex();
-                	worldrenderer.pos(-9.0D * cos, -1, -9.0D * sin).tex(0F, 0.25F).endVertex();
+                    worldrenderer.pos(9.0D * cos, -1, 9.0D * sin).tex(0.125F, 0.25F).endVertex();
+                    worldrenderer.pos(9.0D * cos, 17, 9.0D * sin).tex(0.125F, 0.375F).endVertex();
+                    worldrenderer.pos(-9.0D * cos, 17, -9.0D * sin).tex(0F, 0.375F).endVertex();
+                    worldrenderer.pos(-9.0D * cos, -1, -9.0D * sin).tex(0F, 0.25F).endVertex();
                 } else {
-                	worldrenderer.pos(-9.0D * cos, -1, -9.0D * sin).tex(0F, 0.25F).endVertex();
-                	worldrenderer.pos(-9.0D * cos, 17, -9.0D * sin).tex(0F, 0.375F).endVertex();
-                	worldrenderer.pos(9.0D * cos, 17, 9.0D * sin).tex(0.125F, 0.375F).endVertex();
-                	worldrenderer.pos(9.0D * cos, -1, 9.0D * sin).tex(0.125F, 0.25F).endVertex();
+                    worldrenderer.pos(-9.0D * cos, -1, -9.0D * sin).tex(0F, 0.25F).endVertex();
+                    worldrenderer.pos(-9.0D * cos, 17, -9.0D * sin).tex(0F, 0.375F).endVertex();
+                    worldrenderer.pos(9.0D * cos, 17, 9.0D * sin).tex(0.125F, 0.375F).endVertex();
+                    worldrenderer.pos(9.0D * cos, -1, 9.0D * sin).tex(0.125F, 0.25F).endVertex();
                 }
 
                 tessellator.draw();
                 worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
                 if (a < Math.PI) {
-                	worldrenderer.pos(-9.0D * sin, -1, 9.0D * cos).tex(0.125F, 0.25F).endVertex();
-                	worldrenderer.pos(-9.0D * sin, 17, 9.0D * cos).tex(0.125F, 0.375F).endVertex();
-                	worldrenderer.pos(9.0D * sin, 17, -9.0D * cos).tex(0F, 0.375F).endVertex();
-                	worldrenderer.pos(9.0D * sin, -1, -9.0D * cos).tex(0F, 0.25F).endVertex();
+                    worldrenderer.pos(-9.0D * sin, -1, 9.0D * cos).tex(0.125F, 0.25F).endVertex();
+                    worldrenderer.pos(-9.0D * sin, 17, 9.0D * cos).tex(0.125F, 0.375F).endVertex();
+                    worldrenderer.pos(9.0D * sin, 17, -9.0D * cos).tex(0F, 0.375F).endVertex();
+                    worldrenderer.pos(9.0D * sin, -1, -9.0D * cos).tex(0F, 0.25F).endVertex();
                 } else {
-                	worldrenderer.pos(9.0D * sin, -1, -9.0D * cos).tex(0F, 0.25F).endVertex();
-                	worldrenderer.pos(9.0D * sin, 17, -9.0D * cos).tex(0F, 0.375F).endVertex();
-                	worldrenderer.pos(-9.0D * sin, 17, 9.0D * cos).tex(0.125F, 0.375F).endVertex();
-                	worldrenderer.pos(-9.0D * sin, -1, 9.0D * cos).tex(0.125F, 0.25F).endVertex();
+                    worldrenderer.pos(9.0D * sin, -1, -9.0D * cos).tex(0F, 0.25F).endVertex();
+                    worldrenderer.pos(9.0D * sin, 17, -9.0D * cos).tex(0F, 0.375F).endVertex();
+                    worldrenderer.pos(-9.0D * sin, 17, 9.0D * cos).tex(0.125F, 0.375F).endVertex();
+                    worldrenderer.pos(-9.0D * sin, -1, 9.0D * cos).tex(0.125F, 0.25F).endVertex();
                 }
 
                 tessellator.draw();
             } else {
-            	worldrenderer.pos(-9, -1, 0.0D).tex(0F, 0.25F).endVertex();
-            	worldrenderer.pos(-9, 17, 0.0D).tex(0F, 0.375F).endVertex();
-            	worldrenderer.pos(9, 17, 0.0D).tex(0.125F, 0.375F).endVertex();
-            	worldrenderer.pos(9, -1, 0.0D).tex(0.125F, 0.25F).endVertex();
+                worldrenderer.pos(-9, -1, 0.0D).tex(0F, 0.25F).endVertex();
+                worldrenderer.pos(-9, 17, 0.0D).tex(0F, 0.375F).endVertex();
+                worldrenderer.pos(9, 17, 0.0D).tex(0.125F, 0.375F).endVertex();
+                worldrenderer.pos(9, -1, 0.0D).tex(0.125F, 0.25F).endVertex();
                 tessellator.draw();
             }
 
@@ -220,9 +218,10 @@ public class SAORenderBase extends Render<EntityLivingBase> {
     private void doRenderHealthBar(Minecraft mc, Entity entity, double x, double y, double z, float f0, float f1) {
         if (entity instanceof EntityArmorStand) return;
         if (entity.riddenByEntity != null && entity.riddenByEntity == mc.thePlayer) return;
-        if (entity instanceof EntityPlayer && SAOMod.isCreative((AbstractClientPlayer) entity)) return;
-        if (SAOOption.LESS_VISUALS.value && !(entity instanceof IMob || SAOMod.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != SAOMod.getMaxHealth(entity)) && !(entity instanceof EntityPlayer)) return;
-        SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value ? SAOResources.entities : SAOResources.entitiesCustom);
+        if (entity instanceof EntityPlayer && StaticPlayerHelper.isCreative((AbstractClientPlayer) entity)) return;
+        if (SAOOption.LESS_VISUALS.getValue() && !(entity instanceof IMob || StaticPlayerHelper.getHealth(mc, entity, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(entity)) && !(entity instanceof EntityPlayer))
+            return;
+        SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
@@ -314,20 +313,19 @@ public class SAORenderBase extends Render<EntityLivingBase> {
     }
 
     private float getHealthFactor(Minecraft mc, Entity entity, float time) {
-        final float normalFactor = SAOMod.getHealth(mc, entity, time) / SAOMod.getMaxHealth(entity);
+        final float normalFactor = StaticPlayerHelper.getHealth(mc, entity, time) / StaticPlayerHelper.getMaxHealth(entity);
         final float delta = 1.0F - normalFactor;
 
         return normalFactor + (delta * delta / 2) * normalFactor;
     }
 
     @Override
-    public void renderName(EntityLivingBase entity, double x, double y, double z) {
-        if (entity != null) super.renderName(entity, x, y, z);
+    public void renderName(Entity entity, double x, double y, double z) {
+        if (entity instanceof EntityLivingBase) super.renderName(entity, x, y, z);
     }
 
-	@Override
-	protected ResourceLocation getEntityTexture(EntityLivingBase entity) {
+    @Override
+    protected ResourceLocation getEntityTexture(Entity entity) {
         return null;
-	}
-
+    }
 }

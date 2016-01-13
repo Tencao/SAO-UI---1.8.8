@@ -3,12 +3,13 @@ package com.bluexin.saoui.util;
 import com.bluexin.saoui.SAOMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,6 +27,7 @@ public final class SAOGL {
 
     private static FontRenderer glFont() {
         final Minecraft mc = glMinecraft();
+
         return mc != null ? mc.fontRendererObj : null;
     }
 
@@ -77,6 +79,18 @@ public final class SAOGL {
         glString(string, x, y, argb, false);
     }
 
+    public static void setFont(Minecraft mc, boolean custom) {
+        if (mc.fontRendererObj == null) return;
+        ResourceLocation fontLocation = custom? new ResourceLocation(SAOMod.MODID, "textures/ascii.png"): new ResourceLocation("textures/font/ascii.png");
+        GameSettings gs = mc.gameSettings;
+        mc.fontRendererObj = new FontRenderer(gs, fontLocation, mc.getTextureManager(), false);
+        if (gs.language != null) {
+            mc.fontRendererObj.setUnicodeFlag(mc.isUnicode());
+            mc.fontRendererObj.setBidiFlag(mc.getLanguageManager().isCurrentLanguageBidirectional());
+        }
+        ((IReloadableResourceManager) mc.getResourceManager()).registerReloadListener(mc.fontRendererObj);
+    }
+
     private static int glStringWidth(FontRenderer font, String string) {
         if (font != null) return font.getStringWidth(string);
         else return 0;
@@ -101,7 +115,7 @@ public final class SAOGL {
 
     public static void glBindTexture(ResourceLocation location) {
         glBindTexture(glTextureManager(), location);
-    }    
+    }
 
     public static void glTexturedRect(int x, int y, float z, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight) {
         float f = 0.00390625F;
@@ -176,7 +190,7 @@ public final class SAOGL {
     }
 
     public static void glRescaleNormal(boolean flag) {
-        if (flag)GlStateManager.enableRescaleNormal();
+        if (flag) GlStateManager.enableRescaleNormal();
         else GlStateManager.disableRescaleNormal();
     }
 
@@ -186,7 +200,7 @@ public final class SAOGL {
     }
 
     public static void glCullFace(boolean flag) {
-        if (flag)GlStateManager.enableCull();
+        if (flag) GlStateManager.enableCull();
         else GlStateManager.disableCull();
     }
 

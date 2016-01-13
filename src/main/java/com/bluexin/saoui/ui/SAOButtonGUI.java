@@ -35,12 +35,16 @@ public class SAOButtonGUI extends SAOElementGUI {
         highlight = highlighted;
     }
 
+    public SAOButtonGUI(SAOParentGUI gui, SAOID slot, int xPos, int yPos, int w, int h) {
+        this(gui, slot, xPos, yPos, w, h, "", SAOIcon.NONE);
+    }
+
     @Override
-    public void draw(Minecraft mc, int cursorX, int cursorY) {
+	public void draw(Minecraft mc, int cursorX, int cursorY) {
         super.draw(mc, cursorX, cursorY);
 
         if (visibility > 0) {
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value? SAOResources.gui: SAOResources.guiCustom);
+            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 
             final int hoverState = hoverState(cursorX, cursorY);
 
@@ -75,7 +79,7 @@ public class SAOButtonGUI extends SAOElementGUI {
     }
 
     @Override
-    public boolean mouseReleased(Minecraft mc, int cursorX, int cursorY, int button) {
+	public boolean mouseReleased(Minecraft mc, int cursorX, int cursorY, int button) {
         return (button == 0);
     }
 
@@ -88,7 +92,7 @@ public class SAOButtonGUI extends SAOElementGUI {
     }
 
     @Override
-    public SAOID ID() {
+	public SAOID ID() {
         return id;
     }
 

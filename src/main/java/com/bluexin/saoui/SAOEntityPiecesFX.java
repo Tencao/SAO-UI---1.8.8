@@ -64,7 +64,7 @@ class SAOEntityPiecesFX extends EntityFX {
         if (this.particleAge++ >= this.particleMaxAge) this.setDead();
 
         this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge);
-        this.motionY -= 0.04D * (double)this.particleGravity;
+        this.motionY -= 0.04D * (double) this.particleGravity;
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
 
         if (this.posY == this.prevPosY) {

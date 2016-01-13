@@ -13,6 +13,8 @@ import java.util.Objects;
 @SideOnly(Side.CLIENT)
 public class SAOCharacterViewGUI extends SAOElementGUI {
 
+    public static boolean IS_VIEWING = false;
+
     private final EntityPlayer character;
 
     private int clickIndex;
@@ -22,15 +24,13 @@ public class SAOCharacterViewGUI extends SAOElementGUI {
         character = player;
     }
 
-    private static void drawCharacter(EntityPlayer character, int x, int y, int size, int cursorX, int cursorY) {
+    private void drawCharacter(int x, int y, int size, int cursorX, int cursorY) {
         final float mouseX = (float) x - cursorX;
         final float mouseY = (float) y - size * 1.67F - cursorY;
 
-        final boolean value = SAOOption.COLOR_CURSOR.value;
-
-        SAOOption.COLOR_CURSOR.value = false;
+        IS_VIEWING = true;
         GuiInventory.drawEntityOnScreen(x, y, size, mouseX, mouseY, character);
-        SAOOption.COLOR_CURSOR.value = value;
+        IS_VIEWING = false;
 
         SAOGL.glRescaleNormal(true);
         SAOGL.glTexture2D(true);
@@ -46,7 +46,7 @@ public class SAOCharacterViewGUI extends SAOElementGUI {
         clickIndex = -1;
 
         if (visibility > 0) {
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value ? SAOResources.gui : SAOResources.guiCustom);
+            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
             SAOGL.glColorRGBA(SAOColor.DEFAULT_COLOR.multiplyAlpha(visibility));
 
             int left = getX(false) + width / 2;
@@ -58,7 +58,7 @@ public class SAOCharacterViewGUI extends SAOElementGUI {
 
             SAOGL.glTexturedRect(left - size / 2, (top - shadowY / 2), size, shadowY, 200, 85, 56, 30);
 
-            drawCharacter(character, left, top, size, cursorX, cursorY);
+            drawCharacter(left, top, size, cursorX, cursorY);
 
             left = getX(false) + width / 2;
             top = getY(false) + height / 2;
@@ -72,7 +72,7 @@ public class SAOCharacterViewGUI extends SAOElementGUI {
 
                 final boolean hovered = ((cursorX >= x - 10) && (cursorY >= y - 10) && (cursorX <= x + 10) && (cursorY <= y + 10));
 
-                SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.value ? SAOResources.gui : SAOResources.guiCustom);
+                SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 
                 SAOGL.glColorRGBA((hovered ? SAOColor.HOVER_COLOR : SAOColor.DEFAULT_FONT_COLOR).multiplyAlpha(visibility));
                 SAOGL.glTexturedRect(x - 10, y - 10, 0, 25, 20, 20);

@@ -29,12 +29,12 @@ public class SAOConfirmGUI extends SAOWindowGUI {
     }
 
     @Override
-    protected int getSize() {
+	protected int getSize() {
         return Math.max(super.getSize() - 20, 60);
     }
 
     @Override
-    public void actionPerformed(SAOElementGUI element, SAOAction action, int data) {
+	public void actionPerformed(SAOElementGUI element, SAOAction action, int data) {
         if (actionHandler != null) actionHandler.actionPerformed(element, action, data);
         else super.actionPerformed(element, action, data);
     }
@@ -48,7 +48,7 @@ public class SAOConfirmGUI extends SAOWindowGUI {
     }
 
     @Override
-    protected int getBoxSize(boolean bottom) {
+	protected int getBoxSize(boolean bottom) {
         return bottom ? 40 : super.getBoxSize(bottom);
     }
 

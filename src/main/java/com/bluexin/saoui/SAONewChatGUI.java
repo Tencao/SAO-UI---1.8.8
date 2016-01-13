@@ -1,16 +1,7 @@
 package com.bluexin.saoui;
 
-import com.bluexin.saoui.util.SAOCommand;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SideOnly(Side.CLIENT)
 class SAONewChatGUI /*extends GuiNewChat*/ {/*
