@@ -17,7 +17,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class SAORenderHandler {
 
     private final Minecraft mc = Minecraft.getMinecraft();
-    private boolean replaceGUI = SAOMod.replaceGUI;
+    public static boolean replaceGUI;
+    public static int REPLACE_GUI_DELAY = 0;
 
     @SubscribeEvent
     public void checkingameGUI(TickEvent.RenderTickEvent e) {
@@ -28,9 +29,10 @@ public class SAORenderHandler {
 
     @SubscribeEvent
     public void checkGuiInstance(TickEvent.RenderTickEvent e) {
-        if (replaceGUI) {
+        if ((mc.currentScreen == null) && (mc.inGameHasFocus)) replaceGUI = true;
+        else if (replaceGUI) {
             if (mc.currentScreen != null && !(mc.currentScreen instanceof SAOScreenGUI)) {
-                if (SAOMod.REPLACE_GUI_DELAY > 0) SAOMod.REPLACE_GUI_DELAY--;
+                if (REPLACE_GUI_DELAY > 0) REPLACE_GUI_DELAY--;
                 else if ((mc.currentScreen instanceof GuiIngameMenu) || ((mc.currentScreen instanceof GuiInventory) && (!SAOOption.DEFAULT_INVENTORY.getValue()))) {
                     final boolean inv = (mc.currentScreen instanceof GuiInventory);
 
@@ -56,6 +58,6 @@ public class SAORenderHandler {
                     }
                 }
             }
-        } else if ((mc.currentScreen == null) && (mc.inGameHasFocus)) replaceGUI = true;
+        }
     }
 }

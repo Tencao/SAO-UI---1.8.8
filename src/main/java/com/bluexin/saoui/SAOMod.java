@@ -33,9 +33,8 @@ public class SAOMod {
     public static final double MAX_RANGE = 256.0D;
     public static boolean IS_SPRINTING = false; // TODO: move somewhere else, maybe make skills have a activate/deactivate thing
     public static boolean IS_SNEAKING = false;
-    public static int REPLACE_GUI_DELAY = 0;
     public static boolean verChecked = false;
-    public static boolean replaceGUI;
+    public static boolean replaceGUI = SAORenderHandler.replaceGUI;
     // TODO: optimize things, ie remove public and static!
 
     @Mod.Instance(MODID)
