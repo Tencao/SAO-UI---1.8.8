@@ -3,7 +3,6 @@ package com.bluexin.saoui.ui;
 import com.bluexin.saoui.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -29,11 +28,11 @@ public class SAOCharacterViewGUI extends SAOElementGUI {
     private void drawCharacter(int x, int y, int size, int cursorX, int cursorY) {
         final float mouseX = (float) x - cursorX;
         final float mouseY = (float) y - size * 1.67F - cursorY;
-        Entity tmp = character.ridingEntity;
+        EntityLivingBase tmp = (EntityLivingBase)character.ridingEntity;
 
         IS_VIEWING = true;
-        if (character.isRiding() && tmp instanceof EntityLivingBase)
-            GuiInventory.drawEntityOnScreen(x, y, size, mouseX, mouseY, (EntityLivingBase)tmp);
+        if (character.isRiding() && SAOOption.MOUNT_STAT_VIEW.getValue())
+            GuiInventory.drawEntityOnScreen(x, y, size, mouseX, mouseY, tmp);
         else GuiInventory.drawEntityOnScreen(x, y, size, mouseX, mouseY, character);
         IS_VIEWING = false;
 

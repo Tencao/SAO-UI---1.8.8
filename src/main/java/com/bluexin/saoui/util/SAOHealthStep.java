@@ -35,6 +35,14 @@ public enum SAOHealthStep {
         return step;
     }
 
+    public static SAOHealthStep getStep(Minecraft mc, float health, float time) {
+        SAOHealthStep step = first();
+
+        while ((health > step.getLimit()) && (step.ordinal() + 1 < values().length)) step = next(step);
+
+        return step;
+    }
+
     private static SAOHealthStep first() {
         return values()[0];
     }

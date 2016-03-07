@@ -63,7 +63,7 @@ public final class SAOGL {
         return (alpha << 24) | (red << 16) | (blue << 8) | (green);
     }
 
-    private static void glString(FontRenderer font, String string, int x, int y, int argb, boolean shadow) {
+    public static void glString(FontRenderer font, String string, int x, int y, int argb, boolean shadow) {
         if (font != null) font.drawString(string, x, y, glFontColor(argb), shadow);
     }
 
@@ -117,16 +117,16 @@ public final class SAOGL {
         glBindTexture(glTextureManager(), location);
     }
 
-    public static void glTexturedRect(int x, int y, float z, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight) {
+    public static void glTexturedRect(double x, double y, double z, double width, double height, double srcX, double srcY, double srcWidth, double srcHeight) {
         float f = 0.00390625F;
         float f1 = 0.00390625F;
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos((double) (x), (double) (y + height), (double) z).tex((double) ((float) (srcX) * f), (double) ((float) (srcY + srcHeight) * f1)).endVertex();
-        worldrenderer.pos((double) (x + width), (double) (y + height), (double) z).tex((double) ((float) (srcX + srcWidth) * f), (double) ((float) (srcY + srcHeight) * f1)).endVertex();
-        worldrenderer.pos((double) (x + width), (double) (y), (double) z).tex((double) ((float) (srcX + srcWidth) * f), (double) ((float) (srcY) * f1)).endVertex();
-        worldrenderer.pos((double) (x), (double) (y), (double) z).tex((double) ((float) (srcX) * f), (double) ((float) (srcY) * f1)).endVertex();
+        worldrenderer.pos(x, (y + height), z).tex((double) ((float) (srcX) * f), (double) ((float) (srcY + srcHeight) * f1)).endVertex();
+        worldrenderer.pos(x + width, y + height, z).tex((double) ((float) (srcX + srcWidth) * f), (double) ((float) (srcY + srcHeight) * f1)).endVertex();
+        worldrenderer.pos(x + width, y, z).tex((double) ((float) (srcX + srcWidth) * f), (double) ((float) (srcY) * f1)).endVertex();
+        worldrenderer.pos(x, y, z).tex((double) ((float) (srcX) * f), (double) ((float) (srcY) * f1)).endVertex();
         tessellator.draw();
     }
 

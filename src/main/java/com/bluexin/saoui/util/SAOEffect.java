@@ -1,5 +1,6 @@
 package com.bluexin.saoui.util;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -45,45 +46,48 @@ public enum SAOEffect {
     private static final int SRC_HEIGHT = 10;
 
     @SuppressWarnings("unchecked")
-    public static List<SAOEffect> getEffects(EntityPlayer player) {
+    public static List<SAOEffect> getEffects(EntityLivingBase entity) {
         final List<SAOEffect> effects = new ArrayList<>();
 
-        player.getActivePotionEffects().stream().filter(potionEffect0 -> potionEffect0 instanceof PotionEffect).forEach(potionEffect0 -> {
-            final PotionEffect potionEffect = (PotionEffect) potionEffect0;
+        entity.getActivePotionEffects().stream().filter(potionEffect0 -> potionEffect0 != null).forEach(potionEffect0 -> {
 
-            if (potionEffect.getPotionID() == Potion.moveSlowdown.getId() && potionEffect.getAmplifier() > 5)
+            if (potionEffect0.getPotionID() == Potion.moveSlowdown.getId() && potionEffect0.getAmplifier() > 5)
                 effects.add(PARALYZED);
-            else if (potionEffect.getPotionID() == Potion.poison.getId()) effects.add(POISONED);
-            else if (potionEffect.getPotionID() == Potion.hunger.getId()) effects.add(ROTTEN);
-            else if (potionEffect.getPotionID() == Potion.confusion.getId()) effects.add(ILL);
-            else if (potionEffect.getPotionID() == Potion.weakness.getId()) effects.add(WEAK);
-            else if (potionEffect.getPotionID() == Potion.wither.getId()) effects.add(CURSED);
-            else if (potionEffect.getPotionID() == Potion.blindness.getId()) effects.add(BLIND);
-            else if (potionEffect.getPotionID() == Potion.saturation.getId()) effects.add(SATURATION);
-            else if (potionEffect.getPotionID() == Potion.moveSpeed.getId()) effects.add(SPEED_BOOST);
-            else if (potionEffect.getPotionID() == Potion.waterBreathing.getId()) effects.add(WATER_BREATH);
-            else if (potionEffect.getPotionID() == Potion.damageBoost.getId()) effects.add(STRENGTH);
-            else if (potionEffect.getPotionID() == Potion.absorption.getId()) effects.add(ABSORPTION);
-            else if (potionEffect.getPotionID() == Potion.fireResistance.getId()) effects.add(FIRE_RES);
-            else if (potionEffect.getPotionID() == Potion.digSpeed.getId()) effects.add(HASTE);
-            else if (potionEffect.getPotionID() == Potion.healthBoost.getId()) effects.add(HEALTH_BOOST);
-            else if (potionEffect.getPotionID() == Potion.heal.getId()) effects.add(INST_HEALTH);
-            else if (potionEffect.getPotionID() == Potion.invisibility.getId()) effects.add(INVISIBILITY);
-            else if (potionEffect.getPotionID() == Potion.jump.getId()) effects.add(JUMP_BOOST);
-            else if (potionEffect.getPotionID() == Potion.nightVision.getId()) effects.add(NIGHT_VISION);
-            else if (potionEffect.getPotionID() == Potion.regeneration.getId()) effects.add(REGEN);
-            else if (potionEffect.getPotionID() == Potion.resistance.getId()) effects.add(RESIST);
+            else if (potionEffect0.getPotionID() == Potion.poison.getId()) effects.add(POISONED);
+            else if (potionEffect0.getPotionID() == Potion.hunger.getId()) effects.add(ROTTEN);
+            else if (potionEffect0.getPotionID() == Potion.confusion.getId()) effects.add(ILL);
+            else if (potionEffect0.getPotionID() == Potion.weakness.getId()) effects.add(WEAK);
+            else if (potionEffect0.getPotionID() == Potion.wither.getId()) effects.add(CURSED);
+            else if (potionEffect0.getPotionID() == Potion.blindness.getId()) effects.add(BLIND);
+            else if (potionEffect0.getPotionID() == Potion.saturation.getId()) effects.add(SATURATION);
+            else if (potionEffect0.getPotionID() == Potion.moveSpeed.getId()) effects.add(SPEED_BOOST);
+            else if (potionEffect0.getPotionID() == Potion.waterBreathing.getId()) effects.add(WATER_BREATH);
+            else if (potionEffect0.getPotionID() == Potion.damageBoost.getId()) effects.add(STRENGTH);
+            else if (potionEffect0.getPotionID() == Potion.absorption.getId()) effects.add(ABSORPTION);
+            else if (potionEffect0.getPotionID() == Potion.fireResistance.getId()) effects.add(FIRE_RES);
+            else if (potionEffect0.getPotionID() == Potion.digSpeed.getId()) effects.add(HASTE);
+            else if (potionEffect0.getPotionID() == Potion.healthBoost.getId()) effects.add(HEALTH_BOOST);
+            else if (potionEffect0.getPotionID() == Potion.heal.getId()) effects.add(INST_HEALTH);
+            else if (potionEffect0.getPotionID() == Potion.invisibility.getId()) effects.add(INVISIBILITY);
+            else if (potionEffect0.getPotionID() == Potion.jump.getId()) effects.add(JUMP_BOOST);
+            else if (potionEffect0.getPotionID() == Potion.nightVision.getId()) effects.add(NIGHT_VISION);
+            else if (potionEffect0.getPotionID() == Potion.regeneration.getId()) effects.add(REGEN);
+            else if (potionEffect0.getPotionID() == Potion.resistance.getId()) effects.add(RESIST);
         });
 
-        if (player.getFoodStats().getFoodLevel() <= 6) effects.add(STARVING);
-        else if (player.getFoodStats().getFoodLevel() <= 18) effects.add(HUNGRY);
+        if (entity instanceof EntityPlayer) {
+           if (((EntityPlayer) entity).getFoodStats().getFoodLevel() <= 6)
+                effects.add(STARVING);
+            else if (((EntityPlayer) entity).getFoodStats().getFoodLevel() <= 18)
+                effects.add(HUNGRY);
+            }
 
-        if (player.isInWater()) {
-            if (player.getAir() <= 0) effects.add(DROWNING);
-            else if (player.getAir() < 300) effects.add(WET);
+        if (entity.isInWater()) {
+            if (entity.getAir() <= 0) effects.add(DROWNING);
+            else if (entity.getAir() < 300) effects.add(WET);
         }
 
-        if (player.isBurning()) effects.add(BURNING);
+        if (entity.isBurning()) effects.add(BURNING);
 
         return effects;
     }
