@@ -5,6 +5,9 @@ import com.bluexin.saoui.util.SAOIcon;
 import com.bluexin.saoui.util.SAOOption;
 import com.bluexin.saoui.util.SAOParentGUI;
 
+import java.util.BitSet;
+import java.util.stream.Stream;
+
 /**
  * Part of SAOUI
  *
@@ -24,6 +27,13 @@ public class OptionButton extends SAOButtonGUI {
     }
 
     public void action() {
-        this.highlight = this.option.flip();
+        if (this.option.isRestricted()){
+            if (!option.getValue()) {
+                SAOOption category = option.getCategory();
+                Stream.of(SAOOption.values()).filter(opt -> opt.category == category).filter(opt -> opt.getValue()).forEachOrdered(saoOption -> saoOption.flip());
+                this.highlight = this.option.flip();
+            }
+        }
+        else this.highlight = this.option.flip();
     }
 }

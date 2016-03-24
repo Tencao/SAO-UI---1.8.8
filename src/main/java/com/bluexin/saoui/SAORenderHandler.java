@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -33,7 +34,7 @@ public class SAORenderHandler {
     @SubscribeEvent
     public void checkingameGUI(TickEvent.RenderTickEvent e) {
         boolean b = mc.ingameGUI instanceof SAOIngameGUI;
-        if (mc.ingameGUI != null && SAOOption.DEFAULT_UI.getValue() == b)
+        if (mc.ingameGUI != null && SAOOption.VANILLA_UI.getValue() == b)
             mc.ingameGUI = b ? new GuiIngameForge(mc) : new SAOIngameGUI(mc);
         deadHandlers.forEach(ent -> {
             if (ent != null) {

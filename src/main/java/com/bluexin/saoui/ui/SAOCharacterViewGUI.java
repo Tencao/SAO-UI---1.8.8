@@ -50,7 +50,7 @@ public class SAOCharacterViewGUI extends SAOElementGUI {
         clickIndex = -1;
 
         if (visibility > 0) {
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+            SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
             SAOGL.glColorRGBA(SAOColor.DEFAULT_COLOR.multiplyAlpha(visibility));
 
             int left = getX(false) + width / 2;
@@ -76,7 +76,7 @@ public class SAOCharacterViewGUI extends SAOElementGUI {
 
                 final boolean hovered = ((cursorX >= x - 10) && (cursorY >= y - 10) && (cursorX <= x + 10) && (cursorY <= y + 10));
 
-                SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+                SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 
                 SAOGL.glColorRGBA((hovered ? SAOColor.HOVER_COLOR : SAOColor.DEFAULT_FONT_COLOR).multiplyAlpha(visibility));
                 SAOGL.glTexturedRect(x - 10, y - 10, 0, 25, 20, 20);

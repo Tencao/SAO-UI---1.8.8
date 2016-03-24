@@ -6,6 +6,8 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.stream.Stream;
+
 @SideOnly(Side.CLIENT)
 public final class SAOResources {
 
@@ -32,5 +34,4 @@ public final class SAOResources {
 
     private SAOResources() {
     }
-
 }

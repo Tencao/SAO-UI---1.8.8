@@ -82,7 +82,6 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
                 elements.remove(i);
                 continue;
             }
-
             elements.get(i).update(mc);
         }
     }
@@ -109,7 +108,7 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
         for (int i = elements.size() - 1; i >= 0; i--) elements.get(i).draw(mc, cursorX, cursorY);
 
         if (CURSOR_STATUS == SAOCursorStatus.SHOW) {
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+            SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 
             SAOGL.glBlend(true);
             SAOGL.tryBlendFuncSeparate(770, 771, 1, 0);
@@ -183,11 +182,11 @@ public abstract class SAOScreenGUI extends GuiScreen implements SAOParentGUI {
         }
     }
 
-    protected void backgroundClicked(int cursorX, int cursorY, int button) {
+    protected void backgroundClicked(int cursorX, int cursorY, int button) {/*
         if (button == 0) {
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
-        }
+        }*/
     }
 
     private void mouseWheel(int cursorX, int cursorY, int delta) {

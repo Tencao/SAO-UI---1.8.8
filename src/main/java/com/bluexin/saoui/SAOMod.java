@@ -1,10 +1,7 @@
 package com.bluexin.saoui;
 
 import com.bluexin.saoui.ui.SAOWindowGUI;
-import com.bluexin.saoui.util.ConfigHandler;
-import com.bluexin.saoui.util.FriendsHandler;
-import com.bluexin.saoui.util.SAOGL;
-import com.bluexin.saoui.util.SAOOption;
+import com.bluexin.saoui.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -21,7 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class SAOMod {
     public static final String MODID = "saoui";
     public static final String NAME = "Sword Art Online UI";
-    public static final String VERSION = "1.5";
+    public static final String VERSION = "1.5.1";
     public static final float UNKNOWN_TIME_DELAY = -1F;
     public static final double MAX_RANGE = 256.0D;
     public static boolean IS_SPRINTING = false; // TODO: move somewhere else, maybe make skills have a activate/deactivate thing

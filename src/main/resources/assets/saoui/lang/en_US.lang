@@ -69,11 +69,11 @@ guiBack=Back
 
 
 # Options
-optionDefaultUI=Default UI
 optionDefaultInv=Default Inventory
 optionDefaultDeath=Default Death
 optionDefaultHotbar=Default Hotbar
-optionAltHotbar=Alt Hotbar
+optionHorHotbar=Horizontal Hotbar
+optionVerHotbar=Vertical Hotbar
 optionCrossHair=Cross Hair
 optionHealthBars=Health Bars
 optionSmoothHealth=Smooth Health
@@ -83,7 +83,9 @@ optionCursorMov=Cursor Movement
 optionCliChatPacks=Client Chat Packets
 optionSounds=Sound Effects
 optionLogout=Can Log Out?
-optionOrigUI=Original UI
+optionDefaultUI=Vanilla UI
+optionALOUI=ALO UI
+optionSAOUI=SAO UI
 optionLessVis=Less Visual Noise
 optionSpinning=Spinning Crystals
 optionForceHud=Force HUD (gm 1)
@@ -99,6 +101,7 @@ optionMountStatView=Show Mount Stats
 optionAggro=Aggro System
 
 optCatUI=UI Options
+optTheme=Themes
 optCatHealth=Health Bar Options
 optCatHotBar=Hotbar Options
 optCatEffects=Effects

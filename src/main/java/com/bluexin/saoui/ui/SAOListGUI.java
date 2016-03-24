@@ -65,7 +65,7 @@ public class SAOListGUI extends SAOMenuGUI {
             element.visibility = Math.max(1.0F - (float) ((elementY + elementSize) - (listY + listSize)) / listSize, 0.0F);
         else element.visibility = 1;
 
-        if (element.visibility < 0.6F) element.visibility = 0;
+        if (element.visibility < 0.3F) element.visibility = 0;
         else element.visibility *= element.visibility;
         scroll(0);
     }

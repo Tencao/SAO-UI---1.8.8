@@ -90,7 +90,7 @@ public class SAOIngameGUI extends GuiIngameForge {
     protected void renderCrosshairs(int width, int height) {
        if (replaceEvent(CROSSHAIRS)) return;
         SAOGL.glBlend(true);
-        if (SAOOption.CROSS_HAIR.getValue())
+        if (SAOOption.CROSS_HAIR.getValue()) super.renderCrosshairs(width, height);
         post(CROSSHAIRS);
     }
 
@@ -108,17 +108,17 @@ public class SAOIngameGUI extends GuiIngameForge {
        if (replaceEvent(HOTBAR)) return;
         if (mc.playerController.isSpectator()) this.spectatorGui.renderTooltip(res, partialTicks);
         else if (SAOOption.DEFAULT_HOTBAR.getValue()) super.renderTooltip(res, partialTicks);
-        else if (SAOOption.ALT_HOTBAR.getValue()) {
+        else if (SAOOption.HOR_HOTBAR.getValue()) {
             SAOGL.glAlpha(true);
             SAOGL.glBlend(true);
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+            SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
             SAOGL.glColor(1, 1, 1, 1);
 
             final InventoryPlayer inv = mc.thePlayer.inventory;
             final int slotCount = 9;
 
             for (int i = 0; i < slotCount; i++) {
-                SAOGL.glColorRGBA(i == inv.currentItem ? 0xFFBA66AA : 0xCDCDCDAA);
+                SAOGL.glColorRGBA(i == inv.currentItem ? 0xFFBA66FF : 0xCDCDCDAA);
                 SAOGL.glTexturedRect(res.getScaledWidth() / 2 - 91 - 1 + i * 20, res.getScaledHeight() - 22 - 1, zLevel, 0, 25, 20, 20);
             }
 
@@ -140,7 +140,7 @@ public class SAOIngameGUI extends GuiIngameForge {
         } else {
             SAOGL.glAlpha(true);
             SAOGL.glBlend(true);
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+            SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
             SAOGL.glColor(1, 1, 1, 1);
 
             final InventoryPlayer inv = mc.thePlayer.inventory;
@@ -148,7 +148,7 @@ public class SAOIngameGUI extends GuiIngameForge {
             final int slotsY = (res.getScaledHeight() - (slotCount * 22)) / 2;
 
             for (int i = 0; i < slotCount; i++) {
-                SAOGL.glColorRGBA(i == inv.currentItem ? 0xFFBA66AA : 0xCDCDCDAA);
+                SAOGL.glColorRGBA(i == inv.currentItem ? 0xFFBA66FF : 0xCDCDCDAA);
                 SAOGL.glTexturedRect(res.getScaledWidth() - 24, slotsY + (22 * i), zLevel, 0, 25, 20, 20);
             }
 
@@ -254,6 +254,7 @@ public class SAOIngameGUI extends GuiIngameForge {
 
         }
         mc.mcProfiler.endSection();
+        post(BOSSHEALTH);
 
     }
 
@@ -267,13 +268,13 @@ public class SAOIngameGUI extends GuiIngameForge {
         SAOGL.glBlend(true);
 
         SAOGL.glColor(1, 1, 1, 1);
-        SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+        SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
         SAOGL.glTexturedRect(2, 2, zLevel, 0, 0, 16, 15);
 
         SAOGL.glTexturedRect(18, 2, zLevel, usernameBoxes * 5, 15, 16, 0, 5, 15);
         SAOGL.glString(fontRenderer, username, 18, 3 + (15 - fontRenderer.FONT_HEIGHT) / 2, 0xFFFFFFFF, true);
 
-        SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+        SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
         SAOGL.glColor(1, 1, 1, 1);
 
         final int healthBarWidth = 234;
@@ -281,7 +282,7 @@ public class SAOIngameGUI extends GuiIngameForge {
         SAOGL.glTexturedRect(offsetUsername, 2, zLevel, 21, 0, healthBarWidth, 15);
 
         final int healthWidth = 216;
-        final int healthHeight = SAOOption.ORIGINAL_UI.getValue() ? 9 : 4;
+        final int healthHeight = SAOOption.SAO_UI.getValue() ? 9 : 4;
 
         final int healthValue = (int) (StaticPlayerHelper.getHealth(mc, mc.thePlayer, time) / StaticPlayerHelper.getMaxHealth(mc.thePlayer) * healthWidth);
         SAOHealthStep.getStep(mc, mc.thePlayer, time).glColor();
@@ -290,7 +291,7 @@ public class SAOIngameGUI extends GuiIngameForge {
         int stepTwo = (int) (healthWidth / 3.0F * 2.0F - 3);
         int stepThree = healthWidth - 3;
 
-        if (SAOOption.ORIGINAL_UI.getValue()) {
+        if (SAOOption.SAO_UI.getValue()) {
             int h = healthHeight;
             for (int i = 0; i < healthValue; i++) {
                 SAOGL.glTexturedRect(offsetUsername + 1 + i, 5, zLevel, (healthHeight - h), 15, 1, h);
@@ -356,8 +357,8 @@ public class SAOIngameGUI extends GuiIngameForge {
 
             healthBoxes = (healthStrWidth + 4) / 5;
 
-            final int offsetR = SAOOption.ORIGINAL_UI.getValue() ? HPXP_OFFSET_ORIG_R : HPXP_OFFSET_ALO_R;
-            final int offsetD = SAOOption.ORIGINAL_UI.getValue() ? HPXP_OFFSET_ORIG_D : HPXP_OFFSET_ALO_D;
+            final int offsetR = SAOOption.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_R : HPXP_OFFSET_ALO_R;
+            final int offsetD = SAOOption.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_D : HPXP_OFFSET_ALO_D;
             SAOGL.glColor(1, 1, 1, 1);
             SAOGL.glTexturedRect(offsetUsername + 113 + offsetR, 13 + offsetD, zLevel, 60, 15, 5, 13);
             SAOGL.glTexturedRect(offsetUsername + 118 + offsetR, 13 + offsetD, zLevel, healthBoxes * 5, 13, 66, 15, 5, 13);
@@ -375,7 +376,7 @@ public class SAOIngameGUI extends GuiIngameForge {
         final int offsetForEffects = offsetUsername + healthBarWidth - 4;
         final List<SAOEffect> effects = SAOEffect.getEffects(mc.thePlayer);
 
-        SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+        SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 
         for (int i = 0; i < effects.size(); i++) {
             effects.get(i).glDraw(offsetForEffects + i * 11, 2, zLevel);
@@ -401,7 +402,7 @@ public class SAOIngameGUI extends GuiIngameForge {
 
                 if (!PartyHelper.instance().isMember(playerName)) continue;
 
-                SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+                SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 
                 SAOGL.glTexturedRect(2, baseY + index * h, zLevel, 85, 15, 10, 13);
                 SAOGL.glTexturedRect(13, baseY + index * h, zLevel, 80, 15, 5, 13);
@@ -493,8 +494,8 @@ public class SAOIngameGUI extends GuiIngameForge {
         if (!SAOOption.FORCE_HUD.getValue() && !this.mc.playerController.shouldDrawHUD()) return;
         mc.mcProfiler.startSection("expLevel");
 
-        final int offsetR = SAOOption.ORIGINAL_UI.getValue() ? HPXP_OFFSET_ORIG_R : HPXP_OFFSET_ALO_R;
-        final int offsetD = SAOOption.ORIGINAL_UI.getValue() ? HPXP_OFFSET_ORIG_D : HPXP_OFFSET_ALO_D;
+        final int offsetR = SAOOption.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_R : HPXP_OFFSET_ALO_R;
+        final int offsetD = SAOOption.SAO_UI.getValue() ? HPXP_OFFSET_ORIG_D : HPXP_OFFSET_ALO_D;
         final int offsetHealth = offsetUsername + 113 + (healthBoxes + 2) * 5 + offsetR;
         final String levelStr = StatCollector.translateToLocal("displayLvShort") + ": " + String.valueOf(mc.thePlayer.experienceLevel);
         final int levelStrWidth = fontRenderer.getStringWidth(levelStr);
@@ -502,7 +503,7 @@ public class SAOIngameGUI extends GuiIngameForge {
 
         SAOGL.glAlpha(true);
         SAOGL.glBlend(true);
-        SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+        SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
         SAOGL.glTexturedRect(offsetHealth, 13 + offsetD, zLevel, 5, 13, 66, 15, 2, 13);
         SAOGL.glTexturedRect(offsetHealth + 5, 13 + offsetD, zLevel, levelBoxes * 5, 13, 66, 15, 5, 13);
         SAOGL.glTexturedRect(offsetHealth + (1 + levelBoxes) * 5, 13 + offsetD, zLevel, 5, 13, 78, 15, 3, 13);
@@ -577,7 +578,7 @@ public class SAOIngameGUI extends GuiIngameForge {
                     SAOGL.glTexturedRect(res.getScaledWidth() - 24, slotsY + (22 * i), zLevel, 0, 25, 20, 20);
                 }*/
 
-                int left = width - (SAOOption.ALT_HOTBAR.getValue() || top < slotsY - fontRenderer.FONT_HEIGHT - 2 ? 2 : 26) - w;
+                int left = width - (SAOOption.HOR_HOTBAR.getValue() || top < slotsY - fontRenderer.FONT_HEIGHT - 2 ? 2 : 26) - w;
                 drawRect(left - 1, top - 1, left + w + 1, top + fontRenderer.FONT_HEIGHT - 1, -1873784752);
                 fontRenderer.drawString(msg, left, top, 14737632);
                 top += fontRenderer.FONT_HEIGHT;

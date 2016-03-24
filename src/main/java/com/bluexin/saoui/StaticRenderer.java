@@ -83,7 +83,7 @@ class StaticRenderer{
                 SAOGL.glBlend(true);
                 SAOGL.tryBlendFuncSeparate(770, 771, 1, 0);
 
-                SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
+                SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
                 SAOEventHandler.getColor(living);
                 worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
@@ -140,7 +140,7 @@ class StaticRenderer{
         if (living.riddenByEntity != null && living.riddenByEntity == mc.thePlayer) return;
         if (SAOOption.LESS_VISUALS.getValue() && !(living instanceof IMob || StaticPlayerHelper.getHealth(mc, living, SAOMod.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(living)))
             return;
-        SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
+        SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.entities : SAOResources.entitiesCustom);
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();

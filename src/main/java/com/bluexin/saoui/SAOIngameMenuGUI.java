@@ -113,7 +113,6 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
         } else if (id == SAOID.SLOT && element instanceof SAOSlotGUI && element.parent instanceof SAOInventoryGUI) {
             final SAOSlotGUI slot = (SAOSlotGUI) element;
             final SAOInventoryGUI inventory = (SAOInventoryGUI) element.parent;
-            final IInventory inventoryBauble = BaublesApi.getBaubles(mc.thePlayer);
 
             final SAOInventory type = inventory.filter;
             final Container container = inventory.slots;
@@ -123,12 +122,16 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
                 if (action == SAOAction.LEFT_RELEASED) {
                     final Slot current = findSwapSlot(container, slot.getSlot(), type);
 
-                    if (type == SAOInventory.ACCESSORY && current != null && current.slotNumber != slot.getSlotNumber()) {
-                        inventoryBauble.openInventory(mc.thePlayer);
-                        inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 0);
-                        inventory.handleMouseClick(mc, current, current.slotNumber, 0, 0);
-                        inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 0);
-                        inventoryBauble.closeInventory(mc.thePlayer);
+                    if (type == SAOInventory.ACCESSORY) {
+                        if (SAOInventory.isBaublesLoaded() && current != null && current.slotNumber != slot.getSlotNumber()){
+                            final IInventory inventoryBauble = BaublesApi.getBaubles(mc.thePlayer);
+                            inventoryBauble.openInventory(mc.thePlayer);
+                            inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 0);
+                            inventory.handleMouseClick(mc, current, current.slotNumber, 0, 0);
+                            inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 0);
+                            inventoryBauble.closeInventory(mc.thePlayer);
+
+                        }
                     }
                     else if (current != null && current.slotNumber != slot.getSlotNumber()) {
                         inventory.handleMouseClick(mc, slot.getSlot(), slot.getSlotNumber(), 0, 0);
@@ -193,6 +196,11 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
             if (button.getOption() == SAOOption.VANILLA_OPTIONS) {
                 mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
+            } else if (button.getOption().isRestricted()){
+                if (!button.highlight){
+                    button.action();
+                    closeMenu(element, id);
+                }
             } else {
                 button.action();
             }
@@ -360,7 +368,7 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
 
             menu.elements.add(new SAOButtonGUI(menu, SAOID.TOOLS, 0, 0, StatCollector.translateToLocal("guiTools"), SAOIcon.EQUIPMENT));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.ARMOR, 0, 0, StatCollector.translateToLocal("guiEquipped"), SAOIcon.ARMOR));
-            menu.elements.add(new SAOButtonGUI(menu, SAOID.ACCESSORY, 0, 0, StatCollector.translateToLocal("guiAccessory"), SAOIcon.ACCESSORY));
+            if (SAOInventory.isBaublesLoaded()) menu.elements.add(new SAOButtonGUI(menu, SAOID.ACCESSORY, 0, 0, StatCollector.translateToLocal("guiAccessory"), SAOIcon.ACCESSORY));
             menu.elements.add(new SAOButtonGUI(menu, SAOID.CONSUMABLES, 0, 0, StatCollector.translateToLocal("guiConsumable"), SAOIcon.ITEMS));
         } else if (id == SAOID.ITEMS) {
             menu = new SAOInventoryGUI(element, menuOffsetX, menuOffsetY, 150, 100, mc.thePlayer.inventoryContainer, SAOInventory.ITEMS);
@@ -589,36 +597,40 @@ public class SAOIngameMenuGUI extends SAOScreenGUI {
         for (int i = menus.size() - 1; i >= 0; i--) {
             final Entry<SAOID, SAOMenuGUI> entry = menus.get(i);
 
-            if ((entry.getKey().hasParent(id)) || (entry.getKey() == id)) {
-                if (entry.getValue().elements.contains(info)) {
-                    info = null;
-                    infoCaption = null;
-                    infoText = null;
+            if (id != SAOID.MENU)
+                if ((entry.getKey().hasParent(id)) || (entry.getKey() == id)) {
+                    if (entry.getValue().elements.contains(info)) {
+                        info = null;
+                        infoCaption = null;
+                        infoText = null;
+                    }
+
+                    if (entry.getValue() == sub) sub = null;
+
+                    moveX(-1, entry.getValue());
+
+                    elements.remove(entry.getValue());
+                    menus.remove(i);
                 }
 
-                if (entry.getValue() == sub) sub = null;
-
-                moveX(-1, entry.getValue());
-
-                elements.remove(entry.getValue());
-                menus.remove(i);
-            }
         }
 
-        if (element != null) {
-            final List<SAOElementGUI> list;
+        if (id != SAOID.MENU)
+            if (element != null) {
+                final List<SAOElementGUI> list;
 
-            if (element.parent != null && element.parent instanceof SAOContainerGUI)
-                list = ((SAOContainerGUI) element.parent).elements;
-            else list = elements;
+                if (element.parent != null && element.parent instanceof SAOContainerGUI)
+                    list = ((SAOContainerGUI) element.parent).elements;
+                else list = elements;
 
-            for (final SAOElementGUI element0 : list) {
-                if (element0.ID() == id) {
-                    if (element0 instanceof SAOButtonGUI) ((SAOButtonGUI) element0).highlight = false;
-                    else if (element0 instanceof SAOIconGUI) ((SAOIconGUI) element0).highlight = false;
-                } else element0.enabled = true;
+                for (final SAOElementGUI element0 : list) {
+                    if (element0.ID() == id) {
+                        if (element0 instanceof SAOButtonGUI) ((SAOButtonGUI) element0).highlight = false;
+                        else if (element0 instanceof SAOIconGUI) ((SAOIconGUI) element0).highlight = false;
+                    } else element0.enabled = true;
+                }
             }
-        }
+
     }
 
 }

@@ -35,7 +35,10 @@ public enum SAOInventory { // Todo: support for TConstruct
         return ((item instanceof ItemTool) || (item instanceof ItemBow) || (item instanceof ItemSword));
     }),
 
-    ACCESSORY((stack, state) -> stack.getItem() instanceof IBauble),
+    ACCESSORY((stack, state) -> {
+        if (!isBaublesLoaded()) return false;
+        else return stack.getItem() instanceof IBauble;
+    }),
 
     CONSUMABLES((stack, state) -> {
         final Item item = stack.getItem();

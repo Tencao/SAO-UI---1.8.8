@@ -5,6 +5,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.awt.image.RescaleOp;
+
 @SideOnly(Side.CLIENT)
 public class SAOButtonGUI extends SAOElementGUI {
 
@@ -44,7 +46,7 @@ public class SAOButtonGUI extends SAOElementGUI {
         super.draw(mc, cursorX, cursorY);
 
         if (visibility > 0) {
-            SAOGL.glBindTexture(SAOOption.ORIGINAL_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
+            SAOGL.glBindTexture(SAOOption.SAO_UI.getValue() ? SAOResources.gui : SAOResources.guiCustom);
 
             final int hoverState = hoverState(cursorX, cursorY);
 
