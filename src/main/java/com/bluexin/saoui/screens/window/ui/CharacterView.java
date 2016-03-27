@@ -55,6 +55,7 @@ public class CharacterView extends Elements {
         clickIndex = -1;
 
         if (visibility > 0) {
+            GLCore.glStart();
             GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
             GLCore.glColorRGBA(ColorUtil.DEFAULT_COLOR.multiplyAlpha(visibility));
 
@@ -98,6 +99,7 @@ public class CharacterView extends Elements {
                     if (hovered) clickIndex = index;
                 }
             }
+            GLCore.glEnd();
         }
     }
 

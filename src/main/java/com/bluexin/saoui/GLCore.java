@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ResourceLocation;
@@ -142,6 +143,22 @@ public final class GLCore {
         glTexturedRect(x, y, 0, srcX, srcY, width, height);
     }
 
+    public static void addVertex(double x, double y, double z, double srcX, double srcY){
+        Tessellator.getInstance().getWorldRenderer().pos(x, y, z).tex(srcX, srcY).endVertex();
+    }
+
+    public static void addVertex(double x, double y, double z, double srcX, double srcY, float red, float green, float blue, float alpha){
+        Tessellator.getInstance().getWorldRenderer().pos(x, y, z).tex(srcX, srcY).color(red, green, blue, alpha).endVertex();
+    }
+
+    public static void begin(int glMode, VertexFormat format){
+        Tessellator.getInstance().getWorldRenderer().begin(glMode, format);
+    }
+
+    public static void draw(){
+        Tessellator.getInstance().draw();
+    }
+
     public static void glRect(int x, int y, int width, int height) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
@@ -153,9 +170,9 @@ public final class GLCore {
         tessellator.draw();
     }
 
-    public static void glAlpha(boolean flag) {
-        if (flag) GlStateManager.enableAlpha();
-        else GlStateManager.disableAlpha();
+    public static void glAlphaTest(boolean flag) {
+        if (flag) GL11.glEnable(GL11.GL_ALPHA_TEST);
+        else GL11.glDisable(GL11.GL_ALPHA_TEST);
     }
 
     public static void alphaFunc(int src, int dst) {
@@ -175,18 +192,17 @@ public final class GLCore {
         GlStateManager.tryBlendFuncSeparate(a, b, c, d);
     }
 
-    public static void glDepth(boolean flag) {
-        if (flag) GlStateManager.enableDepth();
-        else GlStateManager.disableDepth();
-    }
-
     public static void depthMask(boolean flag) {
         GlStateManager.depthMask(flag);
     }
 
     public static void glDepthTest(boolean flag) {
-        if (flag) GL11.glEnable(GL11.GL_DEPTH_TEST);
-        else GL11.glDisable(GL11.GL_DEPTH_TEST);
+        if (flag) GlStateManager.enableDepth();
+        else GlStateManager.disableDepth();
+    }
+
+    public static void glDepthFunc(int flag) {
+        GL11.glDepthFunc(flag);
     }
 
     public static void glRescaleNormal(boolean flag) {
@@ -204,6 +220,27 @@ public final class GLCore {
         else GlStateManager.disableCull();
     }
 
+    public static void glTranslatef(float x, float y, float z) {
+        GlStateManager.translate(x, y, z);
+    }
+
+    public static void glNormal3f(float x, float y, float z) {
+        GL11.glNormal3f(x, y, z);
+    }
+
+    public static void glRotatef(float angle, float x, float y, float z) {
+        GlStateManager.rotate(angle, x, y, z);
+    }
+
+    public static void glScalef(float x, float y, float z) {
+        GlStateManager.scale(x, y, z);
+    }
+
+    public static void lighting(boolean flag) {
+        if (flag) GlStateManager.enableLighting();
+        else  GlStateManager.disableLighting();
+    }
+
     public static void glStartUI(Minecraft mc) {
         mc.mcProfiler.startSection(SAOCore.MODID + "[ '" + SAOCore.NAME + "' ]");
     }
@@ -212,4 +249,11 @@ public final class GLCore {
         mc.mcProfiler.endSection();
     }
 
+    public static void glStart() {
+        GlStateManager.pushMatrix();
+    }
+
+    public static void glEnd() {
+        GlStateManager.popMatrix();
+    }
 }

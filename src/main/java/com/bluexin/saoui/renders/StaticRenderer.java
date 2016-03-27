@@ -76,25 +76,22 @@ public class StaticRenderer{
                 float f = 1.6F;
                 float f1 = 0.016666668F * f;
 
-                Tessellator tessellator = Tessellator.getInstance();
-
-                WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-                GL11.glPushMatrix();
-                GL11.glTranslatef((float) x + 0.0F, (float) y + sizeMult * living.height + sizeMult * 1.1F, (float) z);
-                GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-                GL11.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-                GL11.glScalef(-(f1 * sizeMult), -(f1 * sizeMult), (f1 * sizeMult));
-                GL11.glDisable(GL11.GL_LIGHTING);
+                GLCore.glStart();
+                GLCore.glTranslatef((float) x + 0.0F, (float) y + sizeMult * living.height + sizeMult * 1.1F, (float) z);
+                GLCore.glNormal3f(0.0F, 1.0F, 0.0F);
+                GLCore.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+                GLCore.glScalef(-(f1 * sizeMult), -(f1 * sizeMult), (f1 * sizeMult));
+                GLCore.lighting(false);
 
                 GLCore.glDepthTest(true);
 
-                GLCore.glAlpha(true);
+                GLCore.glAlphaTest(true);
                 GLCore.glBlend(true);
                 GLCore.tryBlendFuncSeparate(770, 771, 1, 0);
 
                 GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.entities : StringNames.entitiesCustom);
                 EventHandler.getColor(living);
-                worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+                GLCore.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
                 //System.out.print(state.name() + " assigned to " + living.getCommandSenderName() + " " + living.getUniqueID() + "\n");
 
@@ -104,43 +101,43 @@ public class StaticRenderer{
                     double sin = Math.sin(a);//Math.PI / 3 * 2);
 
                     if (a > Math.PI / 2 && a <= Math.PI * 3 / 2 ) {
-                        worldrenderer.pos(9.0D * cos, -1, 9.0D * sin).tex(0.125F, 0.25F).endVertex();
-                        worldrenderer.pos(9.0D * cos, 17, 9.0D * sin).tex(0.125F, 0.375F).endVertex();
-                        worldrenderer.pos(-9.0D * cos, 17, -9.0D * sin).tex(0F, 0.375F).endVertex();
-                        worldrenderer.pos(-9.0D * cos, -1, -9.0D * sin).tex(0F, 0.25F).endVertex();
+                        GLCore.addVertex(9.0D * cos, -1, 9.0D * sin, 0.125F, 0.25F);
+                        GLCore.addVertex(9.0D * cos, 17, 9.0D * sin, 0.125F, 0.375F);
+                        GLCore.addVertex(-9.0D * cos, 17, -9.0D * sin, 0F, 0.375F);
+                        GLCore.addVertex(-9.0D * cos, -1, -9.0D * sin, 0F, 0.25F);
                     } else {
-                        worldrenderer.pos(-9.0D * cos, -1, -9.0D * sin).tex(0F, 0.25F).endVertex();
-                        worldrenderer.pos(-9.0D * cos, 17, -9.0D * sin).tex(0F, 0.375F).endVertex();
-                        worldrenderer.pos(9.0D * cos, 17, 9.0D * sin).tex(0.125F, 0.375F).endVertex();
-                        worldrenderer.pos(9.0D * cos, -1, 9.0D * sin).tex(0.125F, 0.25F).endVertex();
+                        GLCore.addVertex(-9.0D * cos, -1, -9.0D * sin, 0F, 0.25F);
+                        GLCore.addVertex(-9.0D * cos, 17, -9.0D * sin, 0F, 0.375F);
+                        GLCore.addVertex(9.0D * cos, 17, 9.0D * sin, 0.125F, 0.375F);
+                        GLCore.addVertex(9.0D * cos, -1, 9.0D * sin, 0.125F, 0.25F);
                     }
 
-                    tessellator.draw();
-                    worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+                    GLCore.draw();
+                    GLCore.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
                     if (a < Math.PI) {
-                        worldrenderer.pos(-9.0D * sin, -1, 9.0D * cos).tex(0.125F, 0.25F).endVertex();
-                        worldrenderer.pos(-9.0D * sin, 17, 9.0D * cos).tex(0.125F, 0.375F).endVertex();
-                        worldrenderer.pos(9.0D * sin, 17, -9.0D * cos).tex(0F, 0.375F).endVertex();
-                        worldrenderer.pos(9.0D * sin, -1, -9.0D * cos).tex(0F, 0.25F).endVertex();
+                        GLCore.addVertex(-9.0D * sin, -1, 9.0D * cos, 0.125F, 0.25F);
+                        GLCore.addVertex(-9.0D * sin, 17, 9.0D * cos, 0.125F, 0.375F);
+                        GLCore.addVertex(9.0D * sin, 17, -9.0D * cos, 0F, 0.375F);
+                        GLCore.addVertex(9.0D * sin, -1, -9.0D * cos, 0F, 0.25F);
                     } else {
-                        worldrenderer.pos(9.0D * sin, -1, -9.0D * cos).tex(0F, 0.25F).endVertex();
-                        worldrenderer.pos(9.0D * sin, 17, -9.0D * cos).tex(0F, 0.375F).endVertex();
-                        worldrenderer.pos(-9.0D * sin, 17, 9.0D * cos).tex(0.125F, 0.375F).endVertex();
-                        worldrenderer.pos(-9.0D * sin, -1, 9.0D * cos).tex(0.125F, 0.25F).endVertex();
+                        GLCore.addVertex(9.0D * sin, -1, -9.0D * cos, 0F, 0.25F);
+                        GLCore.addVertex(9.0D * sin, 17, -9.0D * cos, 0F, 0.375F);
+                        GLCore.addVertex(-9.0D * sin, 17, 9.0D * cos, 0.125F, 0.375F);
+                        GLCore.addVertex(-9.0D * sin, -1, 9.0D * cos, 0.125F, 0.25F);
                     }
 
-                    tessellator.draw();
+                    GLCore.draw();
                 } else {
-                    worldrenderer.pos(-9, -1, 0.0D).tex(0F, 0.25F).endVertex();
-                    worldrenderer.pos(-9, 17, 0.0D).tex(0F, 0.375F).endVertex();
-                    worldrenderer.pos(9, 17, 0.0D).tex(0.125F, 0.375F).endVertex();
-                    worldrenderer.pos(9, -1, 0.0D).tex(0.125F, 0.25F).endVertex();
-                    tessellator.draw();
+                    GLCore.addVertex(-9, -1, 0.0D, 0F, 0.25F);
+                    GLCore.addVertex(-9, 17, 0.0D, 0F, 0.375F);
+                    GLCore.addVertex(9, 17, 0.0D, 0.125F, 0.375F);
+                    GLCore.addVertex(9, -1, 0.0D, 0.125F, 0.25F);
+                    GLCore.draw();
                 }
 
-                GL11.glEnable(GL11.GL_LIGHTING);
-                GL11.glPopMatrix();
+                GLCore.lighting(true);
+                GLCore.glEnd();
             }
         }
     }
@@ -149,10 +146,10 @@ public class StaticRenderer{
         if (living.riddenByEntity != null && living.riddenByEntity == mc.thePlayer) return;
         if (OptionCore.LESS_VISUALS.getValue() && !(living instanceof IMob || StaticPlayerHelper.getHealth(mc, living, SAOCore.UNKNOWN_TIME_DELAY) != StaticPlayerHelper.getMaxHealth(living)))
             return;
+
+        GLCore.glStart();
         GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.entities : StringNames.entitiesCustom);
 
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         GLCore.glDepthTest(true);
         GLCore.glCullFace(false);
         GLCore.glBlend(true);
@@ -162,7 +159,7 @@ public class StaticRenderer{
         final int hitPoints = (int) (getHealthFactor(mc, living, SAOCore.UNKNOWN_TIME_DELAY) * HEALTH_COUNT);
         useColor(mc, living, SAOCore.UNKNOWN_TIME_DELAY);
 
-        worldrenderer.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX);
+        GLCore.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX);
 
         final float sizeMult = living.isChild() && living instanceof EntityMob? 0.5F: 1.0F;
 
@@ -176,14 +173,14 @@ public class StaticRenderer{
 
             final double uv_value = value - (double) (HEALTH_COUNT - hitPoints) / HEALTH_COUNT;
 
-            worldrenderer.pos(x0, y0 + HEALTH_HEIGHT, z0).tex((1.0 - uv_value), 0).endVertex();
-            worldrenderer.pos(x0, y0, z0).tex((1.0 - uv_value), 0.125).endVertex();
+            GLCore.addVertex(x0, y0 + HEALTH_HEIGHT, z0, (1.0 - uv_value), 0);
+            GLCore.addVertex(x0, y0, z0, (1.0 - uv_value), 0.125);
         }
 
-        tessellator.draw();
+        GLCore.draw();
 
         GLCore.glColor(1, 1, 1, 1);
-        worldrenderer.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX);
+        GLCore.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX);
 
         for (int i = 0; i <= HEALTH_COUNT; i++) {
             final double value = (double) i / HEALTH_COUNT;
@@ -193,13 +190,14 @@ public class StaticRenderer{
             final double y0 = y + sizeMult * living.height * HEALTH_OFFSET;
             final double z0 = z + sizeMult * living.width * HEALTH_RANGE * Math.sin(rad);
 
-            worldrenderer.pos(x0, y0 + HEALTH_HEIGHT, z0).tex((1.0 - value), 0.125).endVertex();
-            worldrenderer.pos(x0, y0, z0).tex((1.0 - value), 0.25).endVertex();
+            GLCore.addVertex(x0, y0 + HEALTH_HEIGHT, z0, (1.0 - value), 0.125);
+            GLCore.addVertex(x0, y0, z0, (1.0 - value), 0.25);
         }
 
-        tessellator.draw();
+        GLCore.draw();
 
         GLCore.glCullFace(true);
+        GLCore.glEnd();
     }
 
     public static void doSpawnDeathParticles(Minecraft mc, Entity living) {

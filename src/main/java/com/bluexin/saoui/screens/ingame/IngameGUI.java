@@ -93,8 +93,7 @@ public class IngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderCrosshairs(int width, int height) {
-       if (replaceEvent(CROSSHAIRS)) return;
-        GLCore.glBlend(true);
+        if (pre(CROSSHAIRS)) return;
         if (OptionCore.CROSS_HAIR.getValue()) super.renderCrosshairs(width, height);
         post(CROSSHAIRS);
     }
@@ -102,7 +101,7 @@ public class IngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderArmor(int width, int height) {
-       if (replaceEvent(ARMOR)) return;
+        if (replaceEvent(ARMOR)) return;
         // Nothing happens here
         post(ARMOR);
     }
@@ -110,11 +109,12 @@ public class IngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     protected void renderTooltip(ScaledResolution res, float partialTicks) {
-       if (replaceEvent(HOTBAR)) return;
+        if (replaceEvent(HOTBAR)) return;
         if (mc.playerController.isSpectator()) this.spectatorGui.renderTooltip(res, partialTicks);
         else if (OptionCore.DEFAULT_HOTBAR.getValue()) super.renderTooltip(res, partialTicks);
         else if (OptionCore.HOR_HOTBAR.getValue()) {
-            GLCore.glAlpha(true);
+            GLCore.glStart();
+            GLCore.glAlphaTest(true);
             GLCore.glBlend(true);
             GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
             GLCore.glColor(1, 1, 1, 1);
@@ -141,9 +141,12 @@ public class IngameGUI extends GuiIngameForge {
             }
 
             RenderHelper.disableStandardItemLighting();
+            GLCore.glRescaleNormal(false);
+            GLCore.glEnd();
 
         } else {
-            GLCore.glAlpha(true);
+            GLCore.glStart();
+            GLCore.glAlphaTest(true);
             GLCore.glBlend(true);
             GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
             GLCore.glColor(1, 1, 1, 1);
@@ -168,9 +171,10 @@ public class IngameGUI extends GuiIngameForge {
                 super.renderHotbarItem(i, res.getScaledWidth() - 22, slotsY + 2 + (22 * i), partialTicks, mc.thePlayer);
 
             RenderHelper.disableStandardItemLighting();
+            GLCore.glRescaleNormal(false);
+            GLCore.glEnd();
         }
 
-        GLCore.glRescaleNormal(false);
 
         post(HOTBAR);
     }
@@ -181,7 +185,8 @@ public class IngameGUI extends GuiIngameForge {
        if (replaceEvent(AIR)) return;
         mc.mcProfiler.startSection("air");
         EntityPlayer player = (EntityPlayer)this.mc.getRenderViewEntity();
-        GlStateManager.enableBlend();
+        GLCore.glStart();
+        GLCore.glBlend(true);
         int left = width / 2 + 91;
         int top = height - right_height;
 
@@ -198,7 +203,8 @@ public class IngameGUI extends GuiIngameForge {
             right_height += 10;
         }
 
-        GlStateManager.disableBlend();
+        GLCore.glBlend(false);
+        GLCore.glEnd();
         mc.mcProfiler.endSection();
         // Linked to renderHealth
         post(AIR);
@@ -212,12 +218,13 @@ public class IngameGUI extends GuiIngameForge {
         mc.mcProfiler.startSection("bossHealth");
         if (BossStatus.bossName != null && BossStatus.statusBarTime > 0)
         {
-            GLCore.glAlpha(true);
+            GLCore.glStart();
+            GLCore.glAlphaTest(true);
             GLCore.glBlend(true);
             --BossStatus.statusBarTime;
 
             double scale = 1.00;
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             GLCore.glBindTexture(StringNames.gui);
 
@@ -252,10 +259,11 @@ public class IngameGUI extends GuiIngameForge {
             //name
             String s = BossStatus.bossName;
             fontRenderer.drawStringWithShadow(s, width / 2 - fontRenderer.getStringWidth(s) / 2, b0 - 10, 16777215);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GLCore.glColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-            GLCore.glAlpha(false);
+            GLCore.glAlphaTest(false);
             GLCore.glBlend(false);
+            GLCore.glEnd();
 
         }
         mc.mcProfiler.endSection();
@@ -266,10 +274,11 @@ public class IngameGUI extends GuiIngameForge {
     @Override
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled=true)
     public void renderHealth(int width, int height) {
-       if (replaceEvent(HEALTH)) return;
+        if (replaceEvent(HEALTH)) return;
         mc.mcProfiler.startSection("health");
 
-        GLCore.glAlpha(true);
+        GLCore.glStart();
+        GLCore.glAlphaTest(true);
         GLCore.glBlend(true);
 
         GLCore.glColor(1, 1, 1, 1);
@@ -396,7 +405,7 @@ public class IngameGUI extends GuiIngameForge {
 
             if (players.contains(mc.thePlayer)) players.remove(mc.thePlayer);
 
-            GLCore.glAlpha(true);
+            GLCore.glAlphaTest(true);
             GLCore.glBlend(true);
 
             int index = 0;
@@ -450,6 +459,7 @@ public class IngameGUI extends GuiIngameForge {
 
             mc.mcProfiler.endSection();
         }
+        GLCore.glEnd();
     }
 
     @Override
@@ -459,11 +469,12 @@ public class IngameGUI extends GuiIngameForge {
     }
 
     private void renderFood(int healthWidth, int healthHeight, int offsetUsername, int stepOne, int stepTwo, int stepThree) {
-       if (replaceEvent(FOOD)) return;
+        if (replaceEvent(FOOD)) return;
         mc.mcProfiler.startSection("food");
         final int foodValue = (int) (StaticPlayerHelper.getHungerFract(mc, mc.thePlayer, time) * healthWidth);
         int h = foodValue < 12? 12 - foodValue: 0;
         int o = healthHeight;
+        GLCore.glStart();
         GLCore.glColorRGBA(0x8EE1E8);
         for (int i = 0; i < foodValue; i++) {
             GLCore.glTexturedRect(offsetUsername + i + 4, 9, zLevel, h, 240, 1, o);
@@ -489,6 +500,7 @@ public class IngameGUI extends GuiIngameForge {
         }
 
         mc.mcProfiler.endSection();
+        GLCore.glEnd();
         post(FOOD);
     }
 
@@ -506,13 +518,15 @@ public class IngameGUI extends GuiIngameForge {
         final int levelStrWidth = fontRenderer.getStringWidth(levelStr);
         final int levelBoxes = (levelStrWidth + 4) / 5;
 
-        GLCore.glAlpha(true);
+        GLCore.glStart();
+        GLCore.glAlphaTest(true);
         GLCore.glBlend(true);
         GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
         GLCore.glTexturedRect(offsetHealth, 13 + offsetD, zLevel, 5, 13, 66, 15, 2, 13);
         GLCore.glTexturedRect(offsetHealth + 5, 13 + offsetD, zLevel, levelBoxes * 5, 13, 66, 15, 5, 13);
         GLCore.glTexturedRect(offsetHealth + (1 + levelBoxes) * 5, 13 + offsetD, zLevel, 5, 13, 78, 15, 3, 13);
         GLCore.glString(levelStr, offsetHealth + 5, 16 + offsetD, 0xFFFFFFFF, true);
+        GLCore.glEnd();
 
         mc.mcProfiler.endSection();
         post(EXPERIENCE);

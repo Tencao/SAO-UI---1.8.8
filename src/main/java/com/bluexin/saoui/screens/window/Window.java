@@ -44,6 +44,7 @@ public class Window extends MenuGUI {
     @Override
     public void draw(Minecraft mc, int cursorX, int cursorY) {
         if (visibility > 0) {
+            GLCore.glStart();
             GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
             GLCore.glColorRGBA(ColorUtil.DEFAULT_COLOR.multiplyAlpha(visibility));
 
@@ -75,6 +76,7 @@ public class Window extends MenuGUI {
 
             GLCore.glTexturedRect(left, top + size + topBox, width2, bottomBox, 0, 65, width2, 20);
             GLCore.glTexturedRect(left + width2, top + size + topBox, width2, bottomBox, 200 - width2, 65, width2, 20);
+            GLCore.glEnd();
         }
 
         super.draw(mc, cursorX, cursorY);

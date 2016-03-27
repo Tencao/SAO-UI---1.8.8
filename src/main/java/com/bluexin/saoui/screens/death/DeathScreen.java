@@ -1,5 +1,6 @@
 package com.bluexin.saoui.screens.death;
 
+import com.bluexin.saoui.GLCore;
 import com.bluexin.saoui.colorstates.CursorStatus;
 import com.bluexin.saoui.events.ConfigHandler;
 import com.bluexin.saoui.screens.Alert;
@@ -50,13 +51,13 @@ public class DeathScreen extends ScreenGUI {
     public void drawScreen(int cursorX, int cursorY, float f) {
         drawDefaultBackground();
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(-width / 2, -height / 2, 0.0F);
-        GlStateManager.scale(2.0F, 2.0F, 2.0F);
+        GLCore.glStart();
+        GLCore.glTranslatef(-width / 2, -height / 2, 0.0F);
+        GLCore.glScalef(2.0F, 2.0F, 2.0F);
 
         super.drawScreen(cursorX, cursorY, f);
 
-        GlStateManager.popMatrix();
+        GLCore.glEnd();
     }
 
     @Override

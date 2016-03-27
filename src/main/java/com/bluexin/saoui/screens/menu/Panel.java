@@ -22,6 +22,7 @@ public class Panel extends MenuGUI {
     @Override
     public void draw(Minecraft mc, int cursorX, int cursorY) {
         if ((visibility > 0) && (height > 0)) {
+            GLCore.glStart();
             GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
 
             final int left = getX(false);
@@ -50,6 +51,7 @@ public class Panel extends MenuGUI {
 
                 GLCore.glTexturedRect(left + 5, top, 156, 25, 10, 10);
             }
+            GLCore.glEnd();
         }
 
         super.draw(mc, cursorX, cursorY);

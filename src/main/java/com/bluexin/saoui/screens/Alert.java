@@ -33,6 +33,7 @@ public class Alert extends Elements {
         super.draw(mc, cursorX, cursorY);
 
         if (visibility > 0) {
+            GLCore.glStart();
             GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
 
             final int color = mouseOver(cursorX, cursorY) ? alertColor.mediumColor(ColorUtil.DEFAULT_FONT_COLOR) : alertColor.rgba;
@@ -52,6 +53,7 @@ public class Alert extends Elements {
             //GlStateManager.scale(0.5F, 0.5F, 0.5F);
             //SAOGL.glString(caption, (int) (left + (width - SAOGL.glStringWidth(caption) / 4) / 16) * 2, (int) (top + (height - SAOGL.glStringHeight()) / 1.5F) * 2, alertColor);
             //GlStateManager.scale(1.0F, 1.0F, 1.0F); // There might be a better way of doing this. Whatever.
+            GLCore.glEnd();
         }
     }
 

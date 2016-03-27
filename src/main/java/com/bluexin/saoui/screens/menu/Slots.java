@@ -66,6 +66,7 @@ public class Slots extends ButtonGUI {
         super.draw(mc, cursorX, cursorY);
 
         if ((visibility > 0) && (enabled)) {
+            GLCore.glStart();
             final int left = getX(false);
             final int top = getY(false);
 
@@ -76,6 +77,7 @@ public class Slots extends ButtonGUI {
                 GLCore.glString("x" + stack.stackSize, left + width + 2, top + height - 16, ColorUtil.multiplyAlpha(getColor(hoverState(cursorX, cursorY), false), visibility), true);
                 this.drawSlot(mc, stack, left + iconOffset, top + iconOffset);
             }
+            GLCore.glEnd();
         }
     }
 
@@ -85,36 +87,34 @@ public class Slots extends ButtonGUI {
         itemRender.renderItemIntoGUI(stack, x, y);
         RenderHelper.disableStandardItemLighting();
 
-        if (stack.isItemEnchanted()) renderEffectSlot(mc.getTextureManager(), x-  1, y - 1);
+        if (stack.isItemEnchanted()) renderEffectSlot(mc, x-  1, y - 1);
         else {
             GLCore.glBlend(true);
-            GLCore.glAlpha(true);
+            GLCore.glAlphaTest(true);
         }
     }
 
-    private void renderEffectSlot(TextureManager manager, int x, int y){
-        GL11.glDepthFunc(GL11.GL_EQUAL);
-        GL11.glDepthMask(false);
-        manager.bindTexture(RES_ITEM_GLINT);
-        GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glColor4f(0.5F, 0.25F, 0.8F, 1.0F);
+    private void renderEffectSlot(Minecraft mc, int x, int y){
+        GLCore.glDepthFunc(GL11.GL_EQUAL);
+        GLCore.depthMask(false);
+        mc.getTextureManager().bindTexture(RES_ITEM_GLINT);
+        GLCore.glAlphaTest(true);
+        GLCore.glBlend(true);
+        GLCore.glColor(0.5F, 0.25F, 0.8F, 1.0F);
         this.renderGlintSlot(x, y, 150, 20);
-        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-        GL11.glDepthMask(true);
-        GL11.glDepthFunc(GL11.GL_LEQUAL);
+        GLCore.tryBlendFuncSeparate(770, 771, 1, 0);
+        GLCore.depthMask(true);
+        GLCore.glDepthFunc(GL11.GL_LEQUAL);
     }
 
     private void renderGlintSlot(int x, int y, int width, int height){
         for (int j1 = 0; j1 < 2; ++j1)
         {
-            OpenGlHelper.glBlendFunc(772, 1, 0, 0);
+            GLCore.tryBlendFuncSeparate(772, 1, 0, 0);
             float f = 0.00390625F;
             float f1 = 0.00390625F;
             float f2 = (float)(Minecraft.getSystemTime() % (long)(3000 + j1 * 1873)) / (3000.0F + (float)(j1 * 1873)) * 256.0F;
             float f3 = 0.0F;
-            Tessellator tessellator = Tessellator.getInstance();
-            WorldRenderer worldrenderer = tessellator.getWorldRenderer();
             float f4 = 4.0F;
 
             if (j1 == 1)
@@ -122,12 +122,12 @@ public class Slots extends ButtonGUI {
                 f4 = -1.0F;
             }
 
-            worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-            worldrenderer.pos((double)(x), (double)(y + height), (double)itemRender.zLevel).tex((double)((f2 + (float)height * f4) * f), (double)((f3 + (float)height) * f1)).endVertex();
-            worldrenderer.pos((double)(x + width), (double)(y + height), (double)itemRender.zLevel).tex((double)((f2 + (float)width + (float)height * f4) * f), (double)((f3 + (float)height) * f1)).endVertex();
-            worldrenderer.pos((double)(x + width), (double)(y), (double)itemRender.zLevel).tex((double)((f2 + (float)width) * f), (double)((f3 + 0.0F) * f1)).endVertex();
-            worldrenderer.pos((double)(x), (double)(y), (double)itemRender.zLevel).tex((double)((f2 + 0.0F) * f), (double)((f3 + 0.0F) * f1)).endVertex();
-            tessellator.draw();
+            GLCore.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+            GLCore.addVertex((double)(x), (double)(y + height), (double)itemRender.zLevel, (double)((f2 + (float)height * f4) * f), (double)((f3 + (float)height) * f1));
+            GLCore.addVertex((double)(x + width), (double)(y + height), (double)itemRender.zLevel, (double)((f2 + (float)width + (float)height * f4) * f), (double)((f3 + (float)height) * f1));
+            GLCore.addVertex((double)(x + width), (double)(y), (double)itemRender.zLevel, (double)((f2 + (float)width) * f), (double)((f3 + 0.0F) * f1));
+            GLCore.addVertex((double)(x), (double)(y), (double)itemRender.zLevel, (double)((f2 + 0.0F) * f), (double)((f3 + 0.0F) * f1));
+            GLCore.draw();
         }
     }
 

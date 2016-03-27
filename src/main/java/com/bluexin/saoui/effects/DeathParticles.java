@@ -72,12 +72,9 @@ public class DeathParticles extends EntityFX {
 
         Minecraft.getMinecraft().renderEngine.bindTexture(StringNames.particleLarge);
 
-        GLCore.glAlpha(true);
-        GLCore.glBlend(true);
-        tessellator.getWorldRenderer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+        GLCore.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
         queuedRenders.forEach(p -> p.renderQueued(tessellator));
-        tessellator.draw();
-        GLCore.glBlend(false);
+        GLCore.draw();
 
         queuedRenders.clear();
     }
@@ -119,15 +116,15 @@ public class DeathParticles extends EntityFX {
         final double sin = Math.sin(a);
 
         if (a < Math.PI) {
-            tessellator.getWorldRenderer().pos(xPos + x1 * cos, yPos + y1, zPos + z1 * sin).tex(0D, 1D).color(this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1).endVertex();
-            tessellator.getWorldRenderer().pos(xPos + x2 * cos, yPos + y2, zPos + z2 * sin).tex(1D, 1D).color(this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1).endVertex();
-            tessellator.getWorldRenderer().pos(xPos + x3 * cos, yPos + y3, zPos + z3 * sin).tex(1D, 0D).color(this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1).endVertex();
-            tessellator.getWorldRenderer().pos(xPos + x4 * cos, yPos + y4, zPos + z4 * sin).tex(0D, 0D).color(this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1).endVertex();
+            GLCore.addVertex(xPos + x1 * cos, yPos + y1, zPos + z1 * sin, 0D, 1D, this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1);
+            GLCore.addVertex(xPos + x2 * cos, yPos + y2, zPos + z2 * sin, 1D, 1D, this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1);
+            GLCore.addVertex(xPos + x3 * cos, yPos + y3, zPos + z3 * sin, 1D, 0D, this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1);
+            GLCore.addVertex(xPos + x4 * cos, yPos + y4, zPos + z4 * sin, 0D, 0D, this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1);
         } else {
-            tessellator.getWorldRenderer().pos(xPos - x1 * cos, yPos + y1, zPos - z1 * sin).tex(0D, 1D).color(this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1).endVertex();
-            tessellator.getWorldRenderer().pos(xPos - x2 * cos, yPos + y2, zPos - z2 * sin).tex(1D, 1D).color(this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1).endVertex();
-            tessellator.getWorldRenderer().pos(xPos - x3 * cos, yPos + y3, zPos - z3 * sin).tex(1D, 0D).color(this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1).endVertex();
-            tessellator.getWorldRenderer().pos(xPos - x4 * cos, yPos + y4, zPos - z4 * sin).tex(0D, 0D).color(this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1).endVertex();
+            GLCore.addVertex(xPos - x1 * cos, yPos + y1, zPos - z1 * sin, 0D, 1D, this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1);
+            GLCore.addVertex(xPos - x2 * cos, yPos + y2, zPos - z2 * sin, 1D, 1D, this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1);
+            GLCore.addVertex(xPos - x3 * cos, yPos + y3, zPos - z3 * sin, 1D, 0D, this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1);
+            GLCore.addVertex(xPos - x4 * cos, yPos + y4, zPos - z4 * sin, 0D, 0D, this.particleRed * colorIntensity, this.particleGreen * colorIntensity, this.particleBlue * colorIntensity, 1);
         }
 
     }

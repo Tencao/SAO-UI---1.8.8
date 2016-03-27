@@ -49,6 +49,7 @@ public class ButtonGUI extends Elements {
         super.draw(mc, cursorX, cursorY);
 
         if (visibility > 0) {
+            GLCore.glStart();
             GLCore.glBindTexture(OptionCore.SAO_UI.getValue() ? StringNames.gui : StringNames.guiCustom);
 
             final int hoverState = hoverState(cursorX, cursorY);
@@ -80,6 +81,7 @@ public class ButtonGUI extends Elements {
             final int captionOffset = (height - GLCore.glStringHeight()) / 2;
 
             GLCore.glString(caption, left + iconOffset * 2 + 16 + 4, top + captionOffset, ColorUtil.multiplyAlpha(color1, visibility));
+            GLCore.glEnd();
         }
     }
 
